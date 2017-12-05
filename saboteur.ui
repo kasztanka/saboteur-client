@@ -64,18 +64,11 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="0">
-         <widget class="QTextEdit" name="room_name">
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>30</height>
-           </size>
-          </property>
-         </widget>
-        </item>
         <item row="1" column="0">
          <widget class="QComboBox" name="available_rooms"/>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLineEdit" name="room_name"/>
         </item>
        </layout>
       </item>
@@ -96,7 +89,13 @@
           <height>200</height>
          </size>
         </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
        </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="new_message"/>
       </item>
       <item>
        <widget class="QPushButton" name="send_message">
