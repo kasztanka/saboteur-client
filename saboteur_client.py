@@ -1,25 +1,13 @@
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import pyqtSlot
+class IncorrectActionError(Exception):
+    pass
 
-from saboteur_gui import Ui_MainWindow
+class SaboteurClient:
 
-class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self, parent=None):
-        super(MainWindow, self).__init__(parent=parent)
-        self.ui = Ui_MainWindow()
-        self.ui.setupUi(self)
+    def get_available_rooms(self):
+        return ['Pokój Piotrka', 'Room 2']
 
-        self.ui.create_room.clicked.connect(self.create_room_click)
+    def create_room(self, room_name):
+        pass
 
-    @pyqtSlot()
-    def create_room_click(self):
-        print('Creating room named:', self.ui.room_name.toPlainText())
-
-
-import sys
-
-if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    w = MainWindow()
-    w.show()
-    sys.exit(app.exec_())
+    def join_room(self, room_name):
+        raise IncorrectActionError()
