@@ -3,6 +3,7 @@ from PyQt5 import QtWidgets
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtWidgets import QMessageBox, QGraphicsScene, QGraphicsView
 
+from cards import Card
 from saboteur_gui import Ui_MainWindow
 from saboteur_client import SaboteurClient
 from saboteur_client import IncorrectActionError
@@ -33,8 +34,8 @@ class MainWindow(QtWidgets.QMainWindow):
         game_board_scene.addItem(game_board)
         game_board_scene.setSceneRect(
             0, 0,
-            GameBoard.CARD_WIDTH * GameBoard.COLS,
-            GameBoard.CARD_HEIGHT * GameBoard.ROWS
+            Card.WIDTH * GameBoard.COLS,
+            Card.HEIGHT * GameBoard.ROWS
         )
         self.ui.game_board.setScene(game_board_scene)
         self.ui.game_board.setCacheMode(QGraphicsView.CacheBackground)
