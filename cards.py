@@ -1,16 +1,17 @@
 import os
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QPen, QColor
 
 
 class Card:
 
     WIDTH = 66
     HEIGHT = 104
+    SELECTION_BORDER_WIDTH = 2
 
-    def __init__(self, filename, is_hand):
+    def __init__(self, filename):
         self.filename = filename
         self.pixmap = QPixmap(filename)
-        self.is_hand = is_hand
+        self.is_selected = False
 
     def paint(self, painter, x, y=0):
         painter.drawPixmap(
@@ -20,6 +21,16 @@ class Card:
             self.HEIGHT,
             self.pixmap
         )
+        if self.is_selected:
+            pen = QPen(QColor(0,255,0))
+            pen.setWidth(5)
+            painter.setPen(pen)
+            painter.drawRect(
+                x * self.WIDTH + self.SELECTION_BORDER_WIDTH,
+                y * self.HEIGHT + self.SELECTION_BORDER_WIDTH,
+                self.WIDTH - 2 * self.SELECTION_BORDER_WIDTH,
+                self.HEIGHT - 2 * self.SELECTION_BORDER_WIDTH
+            )
 
 
 class TunnelCard(Card):

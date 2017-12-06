@@ -19,6 +19,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.client = self.setup_client()
         self.game_board = self.setup_game_board()
         self.hand_board = self.setup_hand_board()
+        self.selected_card = None
         self.prepare_for_next_game()
 
     def setupUi(self):
@@ -53,18 +54,20 @@ class MainWindow(QtWidgets.QMainWindow):
     def setup_client(self):
         client = SaboteurClient()
         client.receive_message.connect(self.receive_message)
+        client.card_played.connect(self.add_card_to_game_board)
         client.start()
         return client
 
     def prepare_for_next_game(self):
         self.ui.available_rooms.addItems(self.client.get_available_rooms())
         self.ui.chat.clear()
-        #self.game_board.reset_cards()
+        self.selected_card = None
+        self.game_board.reset_cards()
 
     def validate_action(func):
-        def safe_action(self):
+        def safe_action(self, *args, **kwargs):
             try:
-                func(self)
+                func(self, *args, **kwargs)
             except IncorrectActionError as e:
                 print(e)
                 msg = QMessageBox()
@@ -75,28 +78,38 @@ class MainWindow(QtWidgets.QMainWindow):
         return safe_action
 
     @validate_action
-    @pyqtSlot()
-    def create_room_click(self):
+    def create_room_click(self, event=None):
         room_name = self.ui.room_name.text()
         print('Creating room named:', room_name)
         self.client.create_room(room_name)
 
     @validate_action
-    @pyqtSlot()
-    def join_room_click(self):
+    def join_room_click(self, event=None):
         room_name = self.ui.available_rooms.currentText()
-        print('Joinging room named:', room_name)
         self.client.join_room(room_name)
+        print('Joining room named:', room_name)
 
-    @pyqtSlot()
-    def send_message_click(self):
+    def send_message_click(self, event=None):
         message = self.ui.new_message.text()
         self.ui.new_message.clear()
         self.client.send_message(message)
         self.receive_message(message)
 
+    @pyqtSlot(str)
     def receive_message(self, message):
         self.ui.chat.append(message)
+
+    @validate_action
+    def play_tunnel_card(self, x ,y):
+        if self.selected_card:
+            self.client.play_tunnel_card(x, y, self.selected_card)
+
+    @pyqtSlot(Card)
+    def add_card_to_game_board(self, card):
+        self.hand_board.remove_selected_card()
+        card.is_selected = False
+        self.game_board.add_card(card)
+        self.selected_card = None
 
 
 if __name__ == '__main__':
