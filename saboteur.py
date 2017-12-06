@@ -7,7 +7,7 @@ from cards import Card
 from saboteur_gui import Ui_MainWindow
 from saboteur_client import SaboteurClient
 from saboteur_client import IncorrectActionError
-from game_board import GameBoard
+from board import GameBoard, HandBoard
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -18,6 +18,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setupUi()
         self.client = self.setup_client()
         self.game_board = self.setup_game_board()
+        self.hand_board = self.setup_hand_board()
         self.prepare_for_next_game()
 
     def setupUi(self):
@@ -29,17 +30,25 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.new_message.returnPressed.connect(self.send_message_click)
 
     def setup_game_board(self):
-        game_board_scene = QGraphicsScene(self.ui.game_board)
         game_board = GameBoard(self)
-        game_board_scene.addItem(game_board)
-        game_board_scene.setSceneRect(
-            0, 0,
-            Card.WIDTH * GameBoard.COLS,
-            Card.HEIGHT * GameBoard.ROWS
-        )
-        self.ui.game_board.setScene(game_board_scene)
-        self.ui.game_board.setCacheMode(QGraphicsView.CacheBackground)
+        self.setup_board(self.ui.game_board, game_board)
         return game_board
+
+    def setup_hand_board(self):
+        hand_board = HandBoard(self)
+        self.setup_board(self.ui.hand_board, hand_board)
+        return hand_board
+
+    def setup_board(self, ui_board, board):
+        board_scene = QGraphicsScene(ui_board)
+        board_scene.addItem(board)
+        board_scene.setSceneRect(
+            0, 0,
+            Card.WIDTH * board.COLS,
+            Card.HEIGHT * board.ROWS
+        )
+        ui_board.setScene(board_scene)
+        ui_board.setCacheMode(QGraphicsView.CacheBackground)
 
     def setup_client(self):
         client = SaboteurClient()

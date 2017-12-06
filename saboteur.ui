@@ -28,7 +28,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QGraphicsView" name="cards_in_hand">
+       <widget class="QGraphicsView" name="hand_board">
         <property name="minimumSize">
          <size>
           <width>550</width>

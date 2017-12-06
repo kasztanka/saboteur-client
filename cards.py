@@ -1,18 +1,18 @@
 import os
-from PyQt5.QtGui import QPixmap, QTransform
+from PyQt5.QtGui import QPixmap
 
 
 class Card:
 
     WIDTH = 66
-    HEIGHT = 103
+    HEIGHT = 104
 
     def __init__(self, filename, is_hand):
         self.filename = filename
         self.pixmap = QPixmap(filename)
         self.is_hand = is_hand
 
-    def paint(self, painter, x, y):
+    def paint(self, painter, x, y=0):
         painter.drawPixmap(
             x * self.WIDTH,
             y * self.HEIGHT,
@@ -41,12 +41,16 @@ class TunnelCard(Card):
         self.right, self.left = self.left, self.right
         self.is_rotated = not self.is_rotated
 
-    def paint_tunnel(self, painter):
+    def paint(self, painter, x, y):
+        painter.save()
         if self.is_rotated:
-            rotation = QTransform()
-            rotation.rotate(180)
-            painter.setTransform(rotation)
-        super(TunnelCard, self).paint(painter, self.x, self.y)
+            x_offset = self.WIDTH * x + self.WIDTH / 2
+            y_offset = self.HEIGHT * y + self.HEIGHT / 2
+            painter.translate(x_offset, y_offset)
+            painter.rotate(180)
+            painter.translate(-x_offset, -y_offset)
+        super(TunnelCard, self).paint(painter, x, y)
+        painter.restore()
 
 
 class ActionCard(Card):
