@@ -47,7 +47,7 @@ class Ui_MainWindow(object):
         self.room_name.setObjectName("room_name")
         self.gridLayout.addWidget(self.room_name, 0, 0, 1, 1)
         self.verticalLayout_3.addLayout(self.gridLayout)
-        self.players_list = QtWidgets.QListView(self.centralwidget)
+        self.players_list = QtWidgets.QListWidget(self.centralwidget)
         self.players_list.setObjectName("players_list")
         self.verticalLayout_3.addWidget(self.players_list)
         self.chat = QtWidgets.QTextEdit(self.centralwidget)

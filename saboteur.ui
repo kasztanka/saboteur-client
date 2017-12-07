@@ -73,7 +73,7 @@
        </layout>
       </item>
       <item>
-       <widget class="QListView" name="players_list"/>
+       <widget class="QListWidget" name="players_list"/>
       </item>
       <item>
        <widget class="QTextEdit" name="chat">

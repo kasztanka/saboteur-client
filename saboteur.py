@@ -1,9 +1,11 @@
 import sys
 from PyQt5 import QtWidgets
-from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtWidgets import QMessageBox, QGraphicsScene, QGraphicsView
+from PyQt5.QtCore import pyqtSlot, Qt
+from PyQt5.QtWidgets import QMessageBox, QGraphicsScene, QGraphicsView, QListWidgetItem
 
+from blockades import Blockades
 from cards import Card
+from player import Player
 from saboteur_gui import Ui_MainWindow
 from saboteur_client import SaboteurClient
 from saboteur_client import IncorrectActionError
@@ -55,6 +57,9 @@ class MainWindow(QtWidgets.QMainWindow):
         client = SaboteurClient()
         client.receive_message.connect(self.receive_message)
         client.card_played.connect(self.add_card_to_game_board)
+        client.player_joined_room.connect(self.player_joined_room)
+        client.player_left_room.connect(self.player_left_room)
+        client.block_player.connect(self.add_blockade_to_player)
         client.start()
         return client
 
@@ -110,6 +115,42 @@ class MainWindow(QtWidgets.QMainWindow):
         card.is_selected = False
         self.game_board.add_card(card)
         self.selected_card = None
+
+    @pyqtSlot(Player)
+    def player_joined_room(self, player):
+        new_item = QListWidgetItem()
+        new_item.setData(Qt.UserRole, player)
+        self.ui.players_list.addItem(new_item)
+        self.update_players_list()
+
+    @pyqtSlot(str)
+    def player_left_room(self, name_to_delete):
+        for i, player in enumerate(self.get_players()):
+            if player.name == name_to_delete:
+                self.ui.players_list.takeItem(i)
+                break
+
+    def update_players_list(self):
+        for i in range(self.ui.players_list.count()):
+            item = self.ui.players_list.item(i)
+            player = item.data(Qt.UserRole)
+            item.setText(str(player))
+
+    @pyqtSlot(str, Blockades)
+    def add_blockade_to_player(self, name, blockade):
+        for player in self.get_players():
+            if player.name == name:
+                print('blokujemy', str(player))
+                player.blockades.add(blockade)
+                print('po blokujemy', str(player))
+                break
+        self.update_players_list()
+
+    def get_players(self):
+        players = []
+        for i in range(self.ui.players_list.count()):
+            players.append(self.ui.players_list.item(i).data(Qt.UserRole))
+        return players
 
 
 if __name__ == '__main__':
