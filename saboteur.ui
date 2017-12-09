@@ -44,30 +44,37 @@
       <item>
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>Sabotazysta</string>
+         <string>Sabotażysta</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="player_name">
+        <property name="placeholderText">
+         <string>Twój nick</string>
         </property>
        </widget>
       </item>
       <item>
        <layout class="QGridLayout" name="gridLayout">
-        <item row="1" column="1">
+        <item row="3" column="1">
          <widget class="QPushButton" name="join_room">
           <property name="text">
-           <string>Dolacz</string>
+           <string>Dołącz</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="1">
+        <item row="2" column="1">
          <widget class="QPushButton" name="create_room">
           <property name="text">
-           <string>Stworz pokoj</string>
+           <string>Stwórz pokój</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
+        <item row="3" column="0">
          <widget class="QComboBox" name="available_rooms"/>
         </item>
-        <item row="0" column="0">
+        <item row="2" column="0">
          <widget class="QLineEdit" name="room_name"/>
         </item>
        </layout>
@@ -100,7 +107,7 @@
       <item>
        <widget class="QPushButton" name="send_message">
         <property name="text">
-         <string>Wyslij</string>
+         <string>Wyślij</string>
         </property>
        </widget>
       </item>

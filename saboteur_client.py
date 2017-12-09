@@ -18,6 +18,9 @@ class SaboteurClient(QThread):
     player_joined_room = pyqtSignal(Player)
     player_left_room = pyqtSignal(str)
     block_player = pyqtSignal(str, Blockades)
+    heal_player = pyqtSignal(str, Blockades)
+    player_activation = pyqtSignal(str)
+    start_game = pyqtSignal(str)
 
     def run(self):
         for i in range(3):
@@ -26,10 +29,18 @@ class SaboteurClient(QThread):
         for name, num_of_cards in [('Magda', 4), ('Andrzej', 3)]:
             sleep(1)
             self.add_player_to_room(Player(name, num_of_cards))
+        self.start_game.emit('Piotrek')
+        self.activate_player('Magda')
         sleep(1)
         self.add_blockade_to_player('Andrzej', Blockades.LAMP)
         sleep(2)
+        self.remove_blockade_from_player('Andrzej', Blockades.LAMP)
+        sleep(1)
+        self.activate_player('Piotrek')
+        sleep(4)
+        self.activate_player('Andrzej')
         self.delete_player_from_room('Magda')
+
         print('nie ma klienta')
 
     def get_available_rooms(self):
@@ -57,3 +68,9 @@ class SaboteurClient(QThread):
 
     def add_blockade_to_player(self, name, blockade):
         self.block_player.emit(name, blockade)
+
+    def remove_blockade_from_player(self, name, blockade):
+        self.heal_player.emit(name, blockade)
+
+    def activate_player(self, name):
+        self.player_activation.emit(name)
