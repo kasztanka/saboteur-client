@@ -29,30 +29,26 @@ class Client():
         print('sending: ', text)
         self.sock.sendall(text.encode())
 
-    def receive_int(self):
-        amount_received = 0
-        amount_expected = 4
+    def receive_buffer(self, amount_expected):
         buffer = []
+        amount_received = 0
         while amount_received < amount_expected:
             data = self.sock.recv(self.BUFFER_SIZE)
             if data == b'':
                 raise RuntimeError("socket connection broken")
             amount_received += len(data)
             buffer.append(data)
+        return buffer
+
+    def receive_int(self):
+        buffer = self.receive_buffer(4)
         number = struct.unpack('!i', b''.join(buffer))[0]
         print('receiving: ', number)
         return number
 
     def receive_text(self):
-        amount_received = 0
-        amount_expected = self.receive_int()
-        buffer = []
-        while amount_received < amount_expected:
-            data = self.sock.recv(self.BUFFER_SIZE)
-            if data == b'':
-                raise RuntimeError("socket connection broken")
-            amount_received += len(data)
-            buffer.append(data)
+        length = self.receive_int()
+        buffer = self.receive_buffer(length)
         text = b''.join(buffer).decode('utf-8')
         print('receiving: ', text)
         return text
