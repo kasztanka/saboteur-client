@@ -1,5 +1,5 @@
 from PyQt5.QtCore import QRectF
-from PyQt5.QtWidgets import QGraphicsItem
+from PyQt5.QtWidgets import QGraphicsItem, QGraphicsScene, QGraphicsView
 from qtconsole.qt import QtCore
 
 from cards import TunnelCard, Card, GoalCard
@@ -41,6 +41,17 @@ class Board(QGraphicsItem):
     def remove_selected_card(self):
         self.cards = list(filter(lambda c: not c.is_selected, self.cards))
         self.update()
+
+    def setup(self, ui_board):
+        board_scene = QGraphicsScene(ui_board)
+        board_scene.addItem(self)
+        board_scene.setSceneRect(
+            0, 0,
+            Card.WIDTH * self.COLS,
+            Card.HEIGHT * self.ROWS
+        )
+        ui_board.setScene(board_scene)
+        ui_board.setCacheMode(QGraphicsView.CacheBackground)
 
 
 class GameBoard(Board):

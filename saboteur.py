@@ -1,7 +1,7 @@
 import sys
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import pyqtSlot, Qt
-from PyQt5.QtWidgets import QGraphicsScene, QGraphicsView, QListWidgetItem
+from PyQt5.QtWidgets import QListWidgetItem
 
 from blockades import Blockades
 from cards import Card
@@ -35,37 +35,26 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def setup_client(self):
         client = SaboteurClient()
-        client.receive_message.connect(self.receive_message)
+        client.message_received.connect(self.receive_message)
         client.card_played.connect(self.add_card_to_game_board)
         client.player_joined_room.connect(self.player_joined_room)
         client.player_left_room.connect(self.player_left_room)
-        client.block_player.connect(self.add_blockade_to_player)
-        client.heal_player.connect(self.remove_blockade_from_player)
+        client.player_blocked.connect(self.add_blockade_to_player)
+        client.player_healed.connect(self.remove_blockade_from_player)
         client.player_activation.connect(self.activate_player)
-        client.start_game.connect(self.start_game)
+        client.game_started.connect(self.start_game)
         client.start()
         return client
 
     def setup_game_board(self):
         game_board = GameBoard(self)
-        self.setup_board(self.ui.game_board, game_board)
+        game_board.setup(self.ui.game_board)
         return game_board
 
     def setup_hand_board(self):
         hand_board = HandBoard(self)
-        self.setup_board(self.ui.hand_board, hand_board)
+        hand_board.setup(self.ui.hand_board)
         return hand_board
-
-    def setup_board(self, ui_board, board):
-        board_scene = QGraphicsScene(ui_board)
-        board_scene.addItem(board)
-        board_scene.setSceneRect(
-            0, 0,
-            Card.WIDTH * board.COLS,
-            Card.HEIGHT * board.ROWS
-        )
-        ui_board.setScene(board_scene)
-        ui_board.setCacheMode(QGraphicsView.CacheBackground)
 
     def prepare_for_next_game(self):
         self.ui.available_rooms.addItems(self.client.get_available_rooms())
@@ -73,22 +62,29 @@ class MainWindow(QtWidgets.QMainWindow):
         self.selected_card = None
         self.game_board.reset_cards()
 
-    @pyqtSlot(str)
-    def start_game(self, local_player_name):
-        self.local_player = LocalPlayer(local_player_name, num_of_cards=0)
+    @pyqtSlot()
+    def start_game(self):
+        self.local_player = LocalPlayer(self.ui.player_name.text(), num_of_cards=0)
         self.player_joined_room(self.local_player)
 
     @validate_action
     def create_room_click(self, event=None):
         room_name = self.ui.room_name.text()
+        player_name = self.get_local_player_name()
+        self.client.create_room(room_name, player_name)
         print('Creating room named:', room_name)
-        self.client.create_room(room_name)
 
     @validate_action
     def join_room_click(self, event=None):
         room_name = self.ui.available_rooms.currentText()
-        self.client.join_room(room_name)
+        player_name = self.get_local_player_name()
+        self.client.join_room(room_name, player_name)
         print('Joining room named:', room_name)
+
+    def get_local_player_name(self):
+        player_name = self.ui.player_name.text()
+        self.ui.player_name.setReadOnly(True)
+        return player_name
 
     def send_message_click(self, event=None):
         message = self.ui.new_message.text()
@@ -101,14 +97,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.chat.append(message)
 
     @validate_action
-    @active_player_required
     @selected_card_required
+    @active_player_required
     def play_tunnel_card(self, x ,y):
         self.client.play_tunnel_card(x, y, self.selected_card)
 
     @validate_action
-    @active_player_required
     @selected_card_required
+    @active_player_required
     def play_blockade_card(self, player):
         self.client.play_blockade_card(player, self.selected_card)
 
