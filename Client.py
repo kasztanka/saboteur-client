@@ -4,33 +4,23 @@ import struct
 
 class Client():
 
+    BUFFER_SIZE = 4
+
     def __init__(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-        server_address = ('192.168.0.13', 42010)
+        server_address = ('192.168.0.106', 42010)
         print('connecting to {} port {}'.format(*server_address))
         self.sock.connect(server_address)
         try:
-
-            amount_received = 0
-            amount_expected = 3
-            char_per_message = 16
-
-            while amount_received < amount_expected:
-                data = self.sock.recv(char_per_message)
-                amount_received += len(data)
-                print('received {}'.format(data))
-
-            self.send_int(14792)
             self.send_text('Ala budzi cara durne emu fika')
-            self.send_text('gna hiena i jenot krokiem lunatyka')
-
+            self.receive_text()
         finally:
             print('closing socket')
             self.sock.close()
 
     def send_int(self, num):
-        packed_int = struct.pack('i', num)
+        packed_int = struct.pack('!i', num)
         print('sending: ', num)
         self.sock.sendall(packed_int)
 
@@ -38,6 +28,34 @@ class Client():
         self.send_int(len(text))
         print('sending: ', text)
         self.sock.sendall(text.encode())
+
+    def receive_int(self):
+        amount_received = 0
+        amount_expected = 4
+        buffer = []
+        while amount_received < amount_expected:
+            data = self.sock.recv(self.BUFFER_SIZE)
+            if data == b'':
+                raise RuntimeError("socket connection broken")
+            amount_received += len(data)
+            buffer.append(data)
+        number = struct.unpack('!i', b''.join(buffer))[0]
+        print('receiving: ', number)
+        return number
+
+    def receive_text(self):
+        amount_received = 0
+        amount_expected = self.receive_int()
+        buffer = []
+        while amount_received < amount_expected:
+            data = self.sock.recv(self.BUFFER_SIZE)
+            if data == b'':
+                raise RuntimeError("socket connection broken")
+            amount_received += len(data)
+            buffer.append(data)
+        text = b''.join(buffer).decode('utf-8')
+        print('receiving: ', text)
+        return text
 
 
 if __name__ == '__main__':
