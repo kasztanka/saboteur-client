@@ -116,9 +116,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     @pyqtSlot(Card)
     def add_card_to_game_board(self, card):
-        card.is_selected = False
         self.game_board.add_card(card)
-        self.selected_card = None
 
     @pyqtSlot(Player)
     def player_joined_room(self, player):

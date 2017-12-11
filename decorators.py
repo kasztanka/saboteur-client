@@ -14,7 +14,6 @@ def validate_action(func):
             msg.setText('Ta akcja jest niedozwolona')
             msg.setWindowTitle('Niepoprawna akcja')
             msg.exec_()
-
     return safe_action
 
 
@@ -28,7 +27,6 @@ def active_player_required(func):
             msg.setText('Poczekaj na swoją turę')
             msg.setWindowTitle('Błędny ruch')
             msg.exec_()
-
     return func_for_active_player
 
 
@@ -37,5 +35,6 @@ def selected_card_required(func):
         if self.selected_card:
             func(self, *args, **kwargs)
             self.hand_board.remove_selected_card()
-
+            self.selected_card.is_selected = False
+            self.selected_card = None
     return func_with_selected_card
