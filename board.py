@@ -2,7 +2,7 @@ from PyQt5.QtCore import QRectF
 from PyQt5.QtWidgets import QGraphicsItem, QGraphicsScene, QGraphicsView
 from qtconsole.qt import QtCore
 
-from cards import TunnelCard, Card, GoalCard
+from cards import Card, GoalCard, TunnelCard, BlockCard, HealCard
 
 
 class Board(QGraphicsItem):
@@ -81,6 +81,8 @@ class HandBoard(Board):
         self.cards.append(TunnelCard('images/tunnels/UDRM.jpg'))
         self.cards.append(TunnelCard('images/tunnels/LRM.jpg'))
         self.cards.append(TunnelCard('images/tunnels/DRM.jpg'))
+        self.cards.append(BlockCard('images/block/LAMP.jpg'))
+        self.cards.append(HealCard('images/heal/LAMP_TRUCK.jpg'))
 
     def paint(self, painter, option, widget):
         for i, card in enumerate(self.cards):

@@ -1,6 +1,8 @@
 import os
 from PyQt5.QtGui import QPixmap, QPen, QColor
 
+from blockade import Blockade
+
 
 class Card:
 
@@ -64,12 +66,17 @@ class TunnelCard(Card):
         painter.restore()
 
 
-class ActionCard(Card):
-    pass
-
-
 class GoalCard(TunnelCard):
-    pass
+    def __init__(self, *args, **kwargs):
+        super(GoalCard, self).__init__(*args, **kwargs)
+        self.is_gold = 'gold' in self.filename
+
+
+class ActionCard(Card):
+    def __init__(self, *args, **kwargs):
+        super(ActionCard, self).__init__(*args, **kwargs)
+        filename = os.path.basename(self.filename).split('.')[0]
+        self.blockade = Blockade[filename]
 
 
 class HealCard(ActionCard):
@@ -81,8 +88,4 @@ class BlockCard(ActionCard):
 
 
 class DestroyCard(ActionCard):
-    pass
-
-
-class MapCard(ActionCard):
     pass

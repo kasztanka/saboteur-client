@@ -1,6 +1,10 @@
 from PyQt5.QtWidgets import QMessageBox
 
-from saboteur_client import IncorrectActionError
+from blockade import Blockade
+
+
+class IncorrectActionError(Exception):
+    pass
 
 
 def validate_action(func):
@@ -8,10 +12,9 @@ def validate_action(func):
         try:
             func(self, *args, **kwargs)
         except IncorrectActionError as e:
-            print(e)
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Warning)
-            msg.setText('Ta akcja jest niedozwolona')
+            msg.setText(str(e))
             msg.setWindowTitle('Niepoprawna akcja')
             msg.exec_()
     return safe_action
@@ -22,11 +25,7 @@ def active_player_required(func):
         if self.local_player and self.local_player.is_active:
             func(self, *args, **kwargs)
         else:
-            msg = QMessageBox()
-            msg.setIcon(QMessageBox.Warning)
-            msg.setText('Poczekaj na swoją turę')
-            msg.setWindowTitle('Błędny ruch')
-            msg.exec_()
+            raise IncorrectActionError('Poczekaj na swoją turę')
     return func_for_active_player
 
 
@@ -38,3 +37,12 @@ def selected_card_required(func):
             self.selected_card.is_selected = False
             self.selected_card = None
     return func_with_selected_card
+
+
+def validate_blockade(func):
+    def func_with_blockade_validated(self, blockade, *args):
+        if isinstance(blockade, Blockade):
+            func(self, blockade, *args)
+        else:
+            raise IncorrectActionError('Niepoprawna wartość blokady')
+    return func_with_blockade_validated

@@ -2,13 +2,10 @@ from time import sleep
 
 from PyQt5.QtCore import QThread, pyqtSignal
 
-from blockades import Blockades
+from blockade import Blockade
 from cards import Card
+from decorators import validate_blockade, IncorrectActionError
 from player import Player
-
-
-class IncorrectActionError(Exception):
-    pass
 
 
 class SaboteurClient(QThread):
@@ -17,8 +14,8 @@ class SaboteurClient(QThread):
     card_played = pyqtSignal(Card)
     player_joined_room = pyqtSignal(Player)
     player_left_room = pyqtSignal(str)
-    player_blocked = pyqtSignal(str, Blockades)
-    player_healed = pyqtSignal(str, Blockades)
+    player_blocked = pyqtSignal(Blockade, str)
+    player_healed = pyqtSignal(Blockade, str)
     player_activation = pyqtSignal(str)
     game_started = pyqtSignal()
 
@@ -37,7 +34,7 @@ class SaboteurClient(QThread):
         self.activate_player(player_name)
 
     def join_room(self, room_name, player_name):
-        raise IncorrectActionError()
+        raise IncorrectActionError('Nie możesz dołączać do innych pokoi')
 
     def send_message(self, message):
         pass
@@ -56,11 +53,13 @@ class SaboteurClient(QThread):
     def delete_player_from_room(self, player_name):
         self.player_left_room.emit(player_name)
 
-    def block_player(self, name, blockade):
-        self.player_blocked.emit(name, blockade)
+    @validate_blockade
+    def block_player(self, blockade, player_name):
+        self.player_blocked.emit(blockade, player_name)
 
-    def heal_player(self, name, blockade):
-        self.player_healed.emit(name, blockade)
+    @validate_blockade
+    def heal_player(self, blockade, player_name):
+        self.player_healed.emit(blockade, player_name)
 
     def activate_player(self, name):
         self.player_activation.emit(name)

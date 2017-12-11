@@ -1,4 +1,4 @@
-from blockades import Blockades
+from blockade import Blockade
 
 
 class Player:
@@ -10,12 +10,14 @@ class Player:
         self.is_active = False
 
     def get_blockades_str(self):
-        blockades_str = ''
-        if Blockades.PICKAXE in self.blockades:
-            blockades_str += 'P'
-        if Blockades.LAMP in self.blockades:
-            blockades_str += 'L'
-        return blockades_str
+        return ''.join(map(lambda b: b.name[0], self.blockades))
+
+    def add_blockade(self, blockade):
+        self.blockades.add(blockade)
+
+    def remove_blockade(self, blockade):
+        for b in Blockade.get_matching_blockades(blockade):
+            self.blockades.discard(b)
 
     def __str__(self):
         blockades_str = self.get_blockades_str()

@@ -3,9 +3,9 @@ from PyQt5 import QtWidgets
 from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtWidgets import QListWidgetItem
 
-from blockades import Blockades
-from cards import Card
-from decorators import validate_action, active_player_required, selected_card_required
+from blockade import Blockade
+from cards import Card, HealCard, BlockCard, TunnelCard
+from decorators import validate_action, active_player_required, selected_card_required, IncorrectActionError
 from player import Player, LocalPlayer
 from saboteur_gui import Ui_MainWindow
 from saboteur_client import SaboteurClient
@@ -32,6 +32,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.join_room.clicked.connect(self.join_room_click)
         self.ui.send_message.clicked.connect(self.send_message_click)
         self.ui.new_message.returnPressed.connect(self.send_message_click)
+        self.ui.players_list.clicked.connect(self.play_action_card)
 
     def setup_client(self):
         client = SaboteurClient()
@@ -99,20 +100,24 @@ class MainWindow(QtWidgets.QMainWindow):
     @validate_action
     @selected_card_required
     @active_player_required
+    def play_action_card(self, event=None):
+        item = self.ui.players_list.currentItem()
+        player = item.data(Qt.UserRole)
+        if isinstance(self.selected_card, BlockCard):
+            self.client.block_player(self.selected_card.blockade, player.name)
+        elif isinstance(self.selected_card, HealCard):
+            self.client.heal_player(self.selected_card.blockade, player.name)
+        else:
+            raise IncorrectActionError('Nie możesz zakładać/zdejmować blokad tą kartą.')
+
+    @validate_action
+    @selected_card_required
+    @active_player_required
     def play_tunnel_card(self, x ,y):
-        self.client.play_tunnel_card(x, y, self.selected_card)
-
-    @validate_action
-    @selected_card_required
-    @active_player_required
-    def play_blockade_card(self, player):
-        self.client.play_blockade_card(player, self.selected_card)
-
-    @validate_action
-    @active_player_required
-    @selected_card_required
-    def play_heal_card(self, player):
-        self.client.play_heal_card(player, self.selected_card)
+        if isinstance(self.selected_card, TunnelCard):
+            self.client.play_tunnel_card(x, y, self.selected_card)
+        else:
+            raise IncorrectActionError('Nie możesz możesz budować tuneli tą kartą.')
 
     @pyqtSlot(Card)
     def add_card_to_game_board(self, card):
@@ -138,16 +143,16 @@ class MainWindow(QtWidgets.QMainWindow):
             player = item.data(Qt.UserRole)
             item.setText(str(player))
 
-    @pyqtSlot(str, Blockades)
-    def add_blockade_to_player(self, name, blockade):
+    @pyqtSlot(Blockade, str)
+    def add_blockade_to_player(self, blockade, name):
         player = self.get_player_by_name(name)
-        player.blockades.add(blockade)
+        player.add_blockade(blockade)
         self.update_players_list()
 
-    @pyqtSlot(str, Blockades)
-    def remove_blockade_from_player(self, name, blockade):
+    @pyqtSlot(Blockade, str)
+    def remove_blockade_from_player(self, blockade, name):
         player = self.get_player_by_name(name)
-        player.blockades.discard(blockade)
+        player.remove_blockade(blockade)
         self.update_players_list()
 
     def get_players(self):
