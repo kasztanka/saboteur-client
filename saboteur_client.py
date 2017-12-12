@@ -1,16 +1,14 @@
-from time import sleep
-
 from PyQt5.QtCore import QThread, pyqtSignal
 
 from blockade import Blockade
 from cards import Card
+from client import Client, MessageCode
 from decorators import validate_blockade, IncorrectActionError
 from player import Player
 
 
 class SaboteurClient(QThread):
-
-    message_received = pyqtSignal(str)
+    chat_message_received = pyqtSignal(str)
     card_played = pyqtSignal(Card)
     player_joined_room = pyqtSignal(Player)
     player_left_room = pyqtSignal(str)
@@ -19,10 +17,16 @@ class SaboteurClient(QThread):
     player_activation = pyqtSignal(str)
     game_started = pyqtSignal()
 
+    def __init__(self):
+        self.network_client = Client()
+        super(SaboteurClient, self).__init__()
+
     def run(self):
-        for i in range(3):
-            sleep(4)
-            self.receive_message('New message' + str(i))
+        while True:
+            message_code = self.network_client.receive_int()
+            if message_code == MessageCode.CHAT_MESSAGE.value:
+                chat_message = self.network_client.receive_text()
+                self.receive_message(chat_message)
 
     def get_available_rooms(self):
         return ['Pokój Piotrka', 'Room 2']
@@ -36,11 +40,12 @@ class SaboteurClient(QThread):
     def join_room(self, room_name, player_name):
         raise IncorrectActionError('Nie możesz dołączać do innych pokoi')
 
-    def send_message(self, message):
-        pass
+    def send_chat_message(self, chat_message):
+        self.network_client.send_int(MessageCode.CHAT_MESSAGE.value)
+        self.network_client.send_text(chat_message)
 
-    def receive_message(self, message):
-        self.message_received.emit(message)
+    def receive_message(self, chat_message):
+        self.chat_message_received.emit(chat_message)
 
     def play_tunnel_card(self, x, y, card):
         card.x = x

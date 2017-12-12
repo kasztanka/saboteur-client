@@ -30,13 +30,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
         self.ui.create_room.clicked.connect(self.create_room_click)
         self.ui.join_room.clicked.connect(self.join_room_click)
-        self.ui.send_message.clicked.connect(self.send_message_click)
-        self.ui.new_message.returnPressed.connect(self.send_message_click)
+        self.ui.send_message.clicked.connect(self.send_chat_message_click)
+        self.ui.new_message.returnPressed.connect(self.send_chat_message_click)
         self.ui.players_list.clicked.connect(self.play_action_card)
 
     def setup_client(self):
         client = SaboteurClient()
-        client.message_received.connect(self.receive_message)
+        client.chat_message_received.connect(self.receive_message)
         client.card_played.connect(self.add_card_to_game_board)
         client.player_joined_room.connect(self.player_joined_room)
         client.player_left_room.connect(self.player_left_room)
@@ -87,11 +87,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.player_name.setReadOnly(True)
         return player_name
 
-    def send_message_click(self, event=None):
-        message = self.ui.new_message.text()
+    def send_chat_message_click(self, event=None):
+        chat_message = self.ui.new_message.text()
         self.ui.new_message.clear()
-        self.client.send_message(message)
-        self.receive_message(message)
+        self.client.send_chat_message(chat_message)
 
     @pyqtSlot(str)
     def receive_message(self, message):
