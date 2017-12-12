@@ -60,7 +60,7 @@ class GameBoard(Board):
 
     def reset_cards(self):
         self.cards = [
-            TunnelCard('images/tunnels/UDLRM.jpg', x=0, y=2),
+            TunnelCard('images/tunnels/UDLRM1.jpg', x=0, y=2),
             GoalCard('images/goals/UDLRM_gold.jpg', x=5, y=0),
             GoalCard('images/goals/ULM_coal.jpg', x=5, y=2),
             GoalCard('images/goals/URM_coal.jpg', x=5, y=3)
@@ -78,10 +78,10 @@ class HandBoard(Board):
     def __init__(self, window):
         super(HandBoard, self).__init__(window)
         self.cards.append(TunnelCard('images/tunnels/UDL.jpg'))
-        self.cards.append(TunnelCard('images/tunnels/UDRM.jpg'))
         self.cards.append(TunnelCard('images/tunnels/LRM.jpg'))
         self.cards.append(TunnelCard('images/tunnels/DRM.jpg'))
         self.cards.append(BlockCard('images/block/LAMP.jpg'))
+        self.cards.append(BlockCard('images/block/TRUCK.jpg'))
         self.cards.append(HealCard('images/heal/LAMP_TRUCK.jpg'))
 
     def paint(self, painter, option, widget):

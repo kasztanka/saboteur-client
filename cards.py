@@ -85,7 +85,3 @@ class HealCard(ActionCard):
 
 class BlockCard(ActionCard):
     pass
-
-
-class DestroyCard(ActionCard):
-    pass
