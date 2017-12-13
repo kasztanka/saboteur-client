@@ -37,12 +37,3 @@ def selected_card_required(func):
             self.selected_card.is_selected = False
             self.selected_card = None
     return func_with_selected_card
-
-
-def validate_blockade(func):
-    def func_with_blockade_validated(self, blockade, *args):
-        if isinstance(blockade, Blockade):
-            func(self, blockade, *args)
-        else:
-            raise IncorrectActionError('Niepoprawna wartość blokady')
-    return func_with_blockade_validated

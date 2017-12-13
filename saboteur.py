@@ -43,7 +43,7 @@ class MainWindow(QtWidgets.QMainWindow):
         client.player_left_room.connect(self.player_left_room)
         client.player_blocked.connect(self.add_blockade_to_player)
         client.player_healed.connect(self.remove_blockade_from_player)
-        client.player_activation.connect(self.activate_player)
+        client.player_activated.connect(self.activate_player)
         client.game_started.connect(self.start_game)
         client.start()
         return client
@@ -92,7 +92,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.client.send_chat_message(chat_message)
 
     @pyqtSlot(str)
-    def receive_message(self, message):
+    def receive_chat_message(self, message):
         self.ui.chat.append(message)
 
     @selected_card_required

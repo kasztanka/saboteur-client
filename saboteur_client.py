@@ -14,7 +14,7 @@ class SaboteurClient(QThread):
     player_left_room = pyqtSignal(str)
     player_blocked = pyqtSignal(Blockade, str)
     player_healed = pyqtSignal(Blockade, str)
-    player_activation = pyqtSignal(str)
+    player_activated = pyqtSignal(str)
     game_started = pyqtSignal()
 
     def __init__(self):
@@ -53,7 +53,6 @@ class SaboteurClient(QThread):
         self.tunnel_card_played.emit(card)
 
     def draw_card(self):
-        #ask server for a card
         pass
 
     def add_player_to_room(self, new_player):
@@ -62,13 +61,11 @@ class SaboteurClient(QThread):
     def delete_player_from_room(self, player_name):
         self.player_left_room.emit(player_name)
 
-    @validate_blockade
     def block_player(self, blockade, player_name):
         self.player_blocked.emit(blockade, player_name)
 
-    @validate_blockade
     def heal_player(self, blockade, player_name):
         self.player_healed.emit(blockade, player_name)
 
     def activate_player(self, name):
-        self.player_activation.emit(name)
+        self.player_activated.emit(name)
