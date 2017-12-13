@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>1028</width>
+    <height>709</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,8 +21,8 @@
        <widget class="QGraphicsView" name="game_board">
         <property name="minimumSize">
          <size>
-          <width>550</width>
-          <height>400</height>
+          <width>800</width>
+          <height>550</height>
          </size>
         </property>
        </widget>
@@ -31,8 +31,8 @@
        <widget class="QGraphicsView" name="hand_board">
         <property name="minimumSize">
          <size>
-          <width>550</width>
-          <height>0</height>
+          <width>800</width>
+          <height>105</height>
          </size>
         </property>
        </widget>
@@ -81,6 +81,13 @@
       </item>
       <item>
        <widget class="QListWidget" name="players_list"/>
+      </item>
+      <item>
+       <widget class="QPushButton" name="draw_card">
+        <property name="text">
+         <string>Dobierz kartę</string>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QTextEdit" name="chat">

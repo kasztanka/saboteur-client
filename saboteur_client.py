@@ -9,7 +9,7 @@ from player import Player
 
 class SaboteurClient(QThread):
     chat_message_received = pyqtSignal(str)
-    card_played = pyqtSignal(Card)
+    tunnel_card_played = pyqtSignal(Card)
     player_joined_room = pyqtSignal(Player)
     player_left_room = pyqtSignal(str)
     player_blocked = pyqtSignal(Blockade, str)
@@ -44,13 +44,17 @@ class SaboteurClient(QThread):
         self.network_client.send_int(MessageCode.CHAT_MESSAGE.value)
         self.network_client.send_text(chat_message)
 
-    def receive_message(self, chat_message):
+    def receive_chat_message(self, chat_message):
         self.chat_message_received.emit(chat_message)
 
     def play_tunnel_card(self, x, y, card):
         card.x = x
         card.y = y
-        self.card_played.emit(card)
+        self.tunnel_card_played.emit(card)
+
+    def draw_card(self):
+        #ask server for a card
+        pass
 
     def add_player_to_room(self, new_player):
         self.player_joined_room.emit(new_player)

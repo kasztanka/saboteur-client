@@ -33,11 +33,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.send_message.clicked.connect(self.send_chat_message_click)
         self.ui.new_message.returnPressed.connect(self.send_chat_message_click)
         self.ui.players_list.clicked.connect(self.play_action_card)
+        self.ui.draw_card.clicked.connect(self.draw_card)
 
     def setup_client(self):
         client = SaboteurClient()
-        client.chat_message_received.connect(self.receive_message)
-        client.card_played.connect(self.add_card_to_game_board)
+        client.chat_message_received.connect(self.receive_chat_message)
+        client.tunnel_card_played.connect(self.add_card_to_game_board)
         client.player_joined_room.connect(self.player_joined_room)
         client.player_left_room.connect(self.player_left_room)
         client.player_blocked.connect(self.add_blockade_to_player)
@@ -68,14 +69,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.local_player = LocalPlayer(self.ui.player_name.text(), num_of_cards=0)
         self.player_joined_room(self.local_player)
 
-    @validate_action
     def create_room_click(self, event=None):
         room_name = self.ui.room_name.text()
         player_name = self.get_local_player_name()
         self.client.create_room(room_name, player_name)
         print('Creating room named:', room_name)
 
-    @validate_action
     def join_room_click(self, event=None):
         room_name = self.ui.available_rooms.currentText()
         player_name = self.get_local_player_name()
@@ -96,7 +95,6 @@ class MainWindow(QtWidgets.QMainWindow):
     def receive_message(self, message):
         self.ui.chat.append(message)
 
-    @validate_action
     @selected_card_required
     @active_player_required
     def play_action_card(self, event=None):
@@ -109,7 +107,6 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             raise IncorrectActionError('Nie możesz zakładać/zdejmować blokad tą kartą.')
 
-    @validate_action
     @selected_card_required
     @active_player_required
     def play_tunnel_card(self, x ,y):
@@ -117,6 +114,10 @@ class MainWindow(QtWidgets.QMainWindow):
             self.client.play_tunnel_card(x, y, self.selected_card)
         else:
             raise IncorrectActionError('Nie możesz możesz budować tuneli tą kartą.')
+
+    @active_player_required
+    def draw_card(self):
+        self.client.draw_card()
 
     @pyqtSlot(Card)
     def add_card_to_game_board(self, card):

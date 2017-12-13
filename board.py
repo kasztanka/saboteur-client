@@ -55,15 +55,15 @@ class Board(QGraphicsItem):
 
 
 class GameBoard(Board):
-    ROWS = 4
-    COLS = 6
+    ROWS = 5
+    COLS = 10
 
     def reset_cards(self):
         self.cards = [
             TunnelCard('images/tunnels/UDLRM1.jpg', x=0, y=2),
-            GoalCard('images/goals/UDLRM_gold.jpg', x=5, y=0),
-            GoalCard('images/goals/ULM_coal.jpg', x=5, y=2),
-            GoalCard('images/goals/URM_coal.jpg', x=5, y=3)
+            GoalCard('images/goals/UDLRM_gold.jpg', x=9, y=0),
+            GoalCard('images/goals/ULM_coal.jpg', x=9, y=2),
+            GoalCard('images/goals/URM_coal.jpg', x=9, y=4)
         ]
 
     def paint(self, painter, option, widget):
@@ -73,7 +73,7 @@ class GameBoard(Board):
 
 class HandBoard(Board):
     ROWS = 1
-    COLS = 6
+    COLS = 10
 
     def __init__(self, window):
         super(HandBoard, self).__init__(window)
