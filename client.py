@@ -15,7 +15,7 @@ class Client:
     BUFFER_SIZE = 4
 
     def __init__(self):
-        server_address = ('10.160.43.5', 42010)
+        server_address = ('localhost', 42010)
         print('connecting to {} port {}'.format(*server_address))
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.connect(server_address)

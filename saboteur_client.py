@@ -3,7 +3,6 @@ from PyQt5.QtCore import QThread, pyqtSignal
 from blockade import Blockade
 from cards import Card
 from client import Client, MessageCode
-from decorators import validate_blockade, IncorrectActionError
 from player import Player
 
 
@@ -27,12 +26,12 @@ class SaboteurClient(QThread):
             if message_code == MessageCode.CHAT_MESSAGE.value:
                 chat_message = self.network_client.receive_text()
                 print('Receiving message: ', chat_message)
-                self.receive_message(chat_message)
+                self.chat_message_received.emit(chat_message)
             elif message_code == MessageCode.ADD_PLAYER.value:
                 new_player_name = self.network_client.receive_text()
                 new_player = Player(new_player_name, 0)
                 print('Dodamy gracza')
-                self.add_player_to_room(new_player)
+                self.player_joined_room.emit(new_player)
                 print('Dodano gracza')
             elif message_code == MessageCode.INCORRECT_ACTION.value:
                 error_message = self.network_client.receive_text()
@@ -47,7 +46,7 @@ class SaboteurClient(QThread):
         self.send_username(player_name)
         self.network_client.send_text(room_name)
         self.game_started.emit()
-        self.activate_player(player_name)
+        self.player_activated.emit(player_name)
 
     def join_room(self, room_number, player_name):
         self.network_client.send_int(MessageCode.JOIN_ROOM.value)
@@ -63,9 +62,6 @@ class SaboteurClient(QThread):
         self.network_client.send_int(MessageCode.CHAT_MESSAGE.value)
         self.network_client.send_text(chat_message)
 
-    def receive_chat_message(self, chat_message):
-        self.chat_message_received.emit(chat_message)
-
     def play_tunnel_card(self, x, y, card):
         card.x = x
         card.y = y
@@ -74,17 +70,8 @@ class SaboteurClient(QThread):
     def draw_card(self):
         pass
 
-    def add_player_to_room(self, new_player):
-        self.player_joined_room.emit(new_player)
-
-    def delete_player_from_room(self, player_name):
-        self.player_left_room.emit(player_name)
-
     def block_player(self, blockade, player_name):
         self.player_blocked.emit(blockade, player_name)
 
     def heal_player(self, blockade, player_name):
         self.player_healed.emit(blockade, player_name)
-
-    def activate_player(self, name):
-        self.player_activated.emit(name)

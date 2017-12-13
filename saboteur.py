@@ -1,11 +1,11 @@
 import sys
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import pyqtSlot, Qt
-from PyQt5.QtWidgets import QListWidgetItem
+from PyQt5.QtWidgets import QListWidgetItem, QMessageBox
 
 from blockade import Blockade
 from cards import Card, HealCard, BlockCard, TunnelCard
-from decorators import validate_action, active_player_required, selected_card_required, IncorrectActionError
+from decorators import active_player_required, selected_card_required
 from player import Player, LocalPlayer
 from saboteur_gui import Ui_MainWindow
 from saboteur_client import SaboteurClient
@@ -95,8 +95,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def receive_chat_message(self, message):
         self.ui.chat.append(message)
 
-    @selected_card_required
     @active_player_required
+    @selected_card_required
     def play_action_card(self, event=None):
         item = self.ui.players_list.currentItem()
         player = item.data(Qt.UserRole)
@@ -105,19 +105,24 @@ class MainWindow(QtWidgets.QMainWindow):
         elif isinstance(self.selected_card, HealCard):
             self.client.heal_player(self.selected_card.blockade, player.name)
         else:
-            raise IncorrectActionError('Nie możesz zakładać/zdejmować blokad tą kartą.')
+            self.show_warning('Nie możesz zakładać/zdejmować blokad tą kartą.')
 
-    @selected_card_required
     @active_player_required
+    @selected_card_required
     def play_tunnel_card(self, x ,y):
         if isinstance(self.selected_card, TunnelCard):
             self.client.play_tunnel_card(x, y, self.selected_card)
         else:
-            raise IncorrectActionError('Nie możesz możesz budować tuneli tą kartą.')
+            self.show_warning('Nie możesz możesz budować tuneli tą kartą.')
 
     @active_player_required
     def draw_card(self):
         self.client.draw_card()
+
+    def discard_used_card(self):
+        self.hand_board.remove_selected_card()
+        self.selected_card.is_selected = False
+        self.selected_card = None
 
     @pyqtSlot(Card)
     def add_card_to_game_board(self, card):
@@ -176,6 +181,13 @@ class MainWindow(QtWidgets.QMainWindow):
         player = self.get_player_by_name(name)
         player.is_active = True
         self.update_players_list()
+
+    def show_warning(self, warning_message):
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Warning)
+        msg.setText(warning_message)
+        msg.setWindowTitle('Niepoprawna akcja')
+        msg.exec_()
 
 
 if __name__ == '__main__':
