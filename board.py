@@ -91,7 +91,8 @@ class HandBoard(Board):
     def tile_clicked(self, button, x, y):
         if x < len(self.cards):
             if button == QtCore.Qt.RightButton:
-                self.cards[x].rotate()
+                if isinstance(self.cards[x], TunnelCard):
+                    self.cards[x].rotate()
             else:
                 for card in self.cards:
                     card.is_selected = False
