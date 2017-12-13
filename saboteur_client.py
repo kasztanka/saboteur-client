@@ -16,8 +16,8 @@ class SaboteurClient(QThread):
     player_activated = pyqtSignal(str)
     game_started = pyqtSignal()
 
-    def __init__(self):
-        self.network_client = Client()
+    def __init__(self, ip_address):
+        self.network_client = Client(ip_address)
         super(SaboteurClient, self).__init__()
 
     def run(self):
@@ -25,14 +25,11 @@ class SaboteurClient(QThread):
             message_code = self.network_client.receive_int()
             if message_code == MessageCode.CHAT_MESSAGE.value:
                 chat_message = self.network_client.receive_text()
-                print('Receiving message: ', chat_message)
                 self.chat_message_received.emit(chat_message)
             elif message_code == MessageCode.ADD_PLAYER.value:
                 new_player_name = self.network_client.receive_text()
                 new_player = Player(new_player_name, 0)
-                print('Dodamy gracza')
                 self.player_joined_room.emit(new_player)
-                print('Dodano gracza')
             elif message_code == MessageCode.INCORRECT_ACTION.value:
                 error_message = self.network_client.receive_text()
             else:

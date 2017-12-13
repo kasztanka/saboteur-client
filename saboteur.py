@@ -14,11 +14,11 @@ from board import GameBoard, HandBoard
 
 class MainWindow(QtWidgets.QMainWindow):
 
-    def __init__(self, parent=None):
+    def __init__(self, ip_address, parent=None):
         super(MainWindow, self).__init__(parent=parent)
         self.ui = Ui_MainWindow()
         self.setupUi()
-        self.client = self.setup_client()
+        self.client = self.setup_client(ip_address)
         self.game_board = self.setup_game_board()
         self.hand_board = self.setup_hand_board()
         self.selected_card = None
@@ -35,8 +35,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.players_list.clicked.connect(self.play_action_card)
         self.ui.draw_card.clicked.connect(self.draw_card)
 
-    def setup_client(self):
-        client = SaboteurClient()
+    def setup_client(self, ip_address):
+        client = SaboteurClient(ip_address)
         client.chat_message_received.connect(self.receive_chat_message)
         client.tunnel_card_played.connect(self.add_card_to_game_board)
         client.player_joined_room.connect(self.player_joined_room)
@@ -191,7 +191,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
 if __name__ == '__main__':
+    if len(sys.argv) < 2:
+        print('Za mało argumentów. Podaj adres IP serwera.')
+        sys.exit(1)
     app = QtWidgets.QApplication(sys.argv)
-    w = MainWindow()
+    w = MainWindow(sys.argv[1])
     w.show()
     sys.exit(app.exec_())

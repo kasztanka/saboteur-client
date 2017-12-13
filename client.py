@@ -14,8 +14,8 @@ class MessageCode(Enum):
 class Client:
     BUFFER_SIZE = 4
 
-    def __init__(self):
-        server_address = ('localhost', 42010)
+    def __init__(self, ip_address):
+        server_address = (ip_address, 42010)
         print('connecting to {} port {}'.format(*server_address))
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.connect(server_address)
