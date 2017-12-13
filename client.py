@@ -4,14 +4,18 @@ from enum import Enum
 
 
 class MessageCode(Enum):
-    CHAT_MESSAGE = 1
+    INCORRECT_ACTION = -1
+    CREATE_ROOM = 1
+    JOIN_ROOM = 2
+    ADD_PLAYER = 3
+    CHAT_MESSAGE = 4
 
 
 class Client:
     BUFFER_SIZE = 4
 
     def __init__(self):
-        server_address = ('localhost', 42010)
+        server_address = ('10.160.43.5', 42010)
         print('connecting to {} port {}'.format(*server_address))
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.connect(server_address)
