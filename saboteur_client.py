@@ -26,19 +26,38 @@ class SaboteurClient(QThread):
             message_code = self.network_client.receive_int()
             if message_code == MessageCode.CHAT_MESSAGE.value:
                 chat_message = self.network_client.receive_text()
+                print('Receiving message: ', chat_message)
                 self.receive_message(chat_message)
+            elif message_code == MessageCode.ADD_PLAYER.value:
+                new_player_name = self.network_client.receive_text()
+                new_player = Player(new_player_name, 0)
+                print('Dodamy gracza')
+                self.add_player_to_room(new_player)
+                print('Dodano gracza')
+            elif message_code == MessageCode.INCORRECT_ACTION.value:
+                error_message = self.network_client.receive_text()
+            else:
+                print('Bledny kod: ', message_code)
 
     def get_available_rooms(self):
         return ['Pokój Piotrka', 'Room 2']
 
     def create_room(self, room_name, player_name):
-        for name, num_of_cards in [('Magda', 4), ('Andrzej', 3)]:
-            self.add_player_to_room(Player(name, num_of_cards))
+        self.network_client.send_int(MessageCode.CREATE_ROOM.value)
+        self.send_username(player_name)
+        self.network_client.send_text(room_name)
         self.game_started.emit()
         self.activate_player(player_name)
 
-    def join_room(self, room_name, player_name):
-        raise IncorrectActionError('Nie możesz dołączać do innych pokoi')
+    def join_room(self, room_number, player_name):
+        self.network_client.send_int(MessageCode.JOIN_ROOM.value)
+        self.send_username(player_name)
+        self.network_client.send_int(room_number)
+        self.game_started.emit()
+        self.activate_player(player_name)
+
+    def send_username(self, username):
+        self.network_client.send_text(username)
 
     def send_chat_message(self, chat_message):
         self.network_client.send_int(MessageCode.CHAT_MESSAGE.value)

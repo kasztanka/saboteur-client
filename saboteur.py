@@ -76,10 +76,10 @@ class MainWindow(QtWidgets.QMainWindow):
         print('Creating room named:', room_name)
 
     def join_room_click(self, event=None):
-        room_name = self.ui.available_rooms.currentText()
+        room_number = self.ui.available_rooms.currentIndex()
         player_name = self.get_local_player_name()
-        self.client.join_room(room_name, player_name)
-        print('Joining room named:', room_name)
+        self.client.join_room(room_number, player_name)
+        print('Joining room named:', room_number)
 
     def get_local_player_name(self):
         player_name = self.ui.player_name.text()
