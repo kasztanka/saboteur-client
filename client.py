@@ -28,7 +28,9 @@ class Client:
         buffer = []
         amount_received = 0
         while amount_received < amount_expected:
-            data = self.sock.recv(self.BUFFER_SIZE)
+            data = self.sock.recv(
+                min(self.BUFFER_SIZE, amount_expected - amount_received)
+            )
             if data == b'':
                 raise RuntimeError('socket connection broken')
             amount_received += len(data)
