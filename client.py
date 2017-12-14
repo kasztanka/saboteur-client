@@ -53,6 +53,6 @@ class Client:
         text = b''.join(buffer).decode('utf-8')
         return text
 
-    def __del__(self):
+    def close_connection(self):
         self.sock.close()
         print('Connection closed')

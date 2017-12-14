@@ -209,6 +209,9 @@ class MainWindow(QtWidgets.QMainWindow):
     def add_rooms(self, rooms):
         self.ui.available_rooms.addItems(rooms)
 
+    def closeEvent(self, *args, **kwargs):
+        self.client.network_client.close_connection()
+
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
