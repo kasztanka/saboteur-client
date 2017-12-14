@@ -24,6 +24,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.selected_card = None
         self.local_player = None
         self.player_name = None
+        self.room_name = None
         self.prepare_for_next_game()
 
     def setupUi(self):
@@ -71,6 +72,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def start_game(self):
         self.local_player = LocalPlayer(self.player_name, num_of_cards=0)
         self.add_player_to_room(self.local_player)
+        self.update_player_info()
 
     @player_name_required
     def create_room_click(self, event=None):
@@ -192,6 +194,13 @@ class MainWindow(QtWidgets.QMainWindow):
         msg.setText(warning_message)
         msg.setWindowTitle('Niepoprawna akcja')
         msg.exec_()
+
+    def update_player_info(self):
+        player_info_text = '''
+        Nazwa gracza: {}
+        Pokój: {}
+        '''.format(self.player_name, self.room_name)
+        self.player_info.setText(player_info_text)
 
 
 if __name__ == '__main__':
