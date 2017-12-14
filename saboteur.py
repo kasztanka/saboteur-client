@@ -45,6 +45,7 @@ class MainWindow(QtWidgets.QMainWindow):
         client.player_healed.connect(self.remove_blockade_from_player)
         client.player_activated.connect(self.activate_player)
         client.game_started.connect(self.start_game)
+        client.error_received.connect(self.show_warning)
         client.start()
         return client
 
@@ -182,6 +183,7 @@ class MainWindow(QtWidgets.QMainWindow):
         player.is_active = True
         self.update_players_list()
 
+    @pyqtSlot(str)
     def show_warning(self, warning_message):
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Warning)

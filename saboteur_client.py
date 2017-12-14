@@ -15,6 +15,7 @@ class SaboteurClient(QThread):
     player_healed = pyqtSignal(Blockade, str)
     player_activated = pyqtSignal(str)
     game_started = pyqtSignal()
+    error_received = pyqtSignal(str)
 
     def __init__(self, ip_address):
         self.network_client = Client(ip_address)
@@ -32,6 +33,7 @@ class SaboteurClient(QThread):
                 self.player_joined_room.emit(new_player)
             elif message_code == MessageCode.INCORRECT_ACTION.value:
                 error_message = self.network_client.receive_text()
+                self.error_received.emit(error_message)
             else:
                 print('Bledny kod: ', message_code)
 
