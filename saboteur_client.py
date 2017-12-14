@@ -3,7 +3,6 @@ from PyQt5.QtCore import QThread, pyqtSignal
 from blockade import Blockade
 from cards import Card
 from client import Client, MessageCode
-from player import Player
 
 
 class SaboteurClient(QThread):
