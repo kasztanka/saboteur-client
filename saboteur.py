@@ -36,7 +36,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.new_message.returnPressed.connect(self.send_chat_message_click)
         self.ui.players_list.clicked.connect(self.play_action_card)
         self.ui.draw_card.clicked.connect(self.draw_card)
-        self.ui.set_player_name.connect(self.set_player_name)
+        self.ui.set_player_name.clicked.connect(self.set_player_name)
 
     def setup_client(self, ip_address):
         client = SaboteurClient(ip_address)
@@ -71,8 +71,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     @pyqtSlot()
     def start_game(self):
-        self.local_player = LocalPlayer(self.player_name, num_of_cards=0)
-        self.add_player_to_room(self.local_player)
         self.update_player_info()
 
     @player_name_required
@@ -135,7 +133,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
     @pyqtSlot(str)
     def add_player_to_room(self, player_name):
-        player = Player(player_name, num_of_cards=5)
+        if player_name == self.player_name:
+            player = LocalPlayer(player_name, num_of_cards=5)
+            self.local_player = player
+        else:
+            player = Player(player_name, num_of_cards=5)
         new_item = QListWidgetItem()
         new_item.setData(Qt.UserRole, player)
         self.ui.players_list.addItem(new_item)
@@ -201,11 +203,12 @@ class MainWindow(QtWidgets.QMainWindow):
         Nazwa gracza: {}
         Pokój: {}
         '''.format(self.player_name, self.room_name)
-        self.player_info.setText(player_info_text)
+        self.ui.player_info.setText(player_info_text)
 
     @pyqtSlot(list)
     def add_rooms(self, rooms):
         self.ui.available_rooms.addItems(rooms)
+
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:

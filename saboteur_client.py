@@ -54,14 +54,12 @@ class SaboteurClient(QThread):
         self.network_client.send_text(player_name)
         self.network_client.send_text(room_name)
         self.game_started.emit()
-        self.player_activated.emit(player_name)
 
     def join_room(self, room_number, player_name):
         self.network_client.send_int(MessageCode.JOIN_ROOM.value)
         self.network_client.send_text(player_name)
         self.network_client.send_int(room_number)
         self.game_started.emit()
-        self.activate_player(player_name)
 
     def send_chat_message(self, chat_message):
         self.network_client.send_int(MessageCode.CHAT_MESSAGE.value)
