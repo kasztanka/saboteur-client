@@ -10,6 +10,8 @@ class MessageCode(Enum):
     JOIN_ROOM = 2
     ADD_PLAYER = 3
     CHAT_MESSAGE = 4
+    START_GAME = 5
+    ACTIVATE_PLAYER = 6
 
 
 class Client:

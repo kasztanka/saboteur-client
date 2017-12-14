@@ -77,15 +77,16 @@ class MainWindow(QtWidgets.QMainWindow):
 
     @player_name_required
     def create_room_click(self, event=None):
-        room_name = self.ui.room_name.text()
-        self.client.create_room(room_name, self.player_name)
-        print('Creating room named:', room_name)
+        self.room_name = self.ui.room_name.text()
+        self.client.create_room(self.room_name, self.player_name)
+        print('Creating room named:', self.room_name)
 
     @player_name_required
     def join_room_click(self, event=None):
         room_number = self.ui.available_rooms.currentIndex()
         self.client.join_room(room_number, self.player_name)
-        print('Joining room named:', room_number)
+        self.room_name = self.ui.available_rooms.currentText()
+        print('Joining room named:', self.room_name)
 
     def set_player_name(self):
         self.player_name = self.ui.player_name.text()
