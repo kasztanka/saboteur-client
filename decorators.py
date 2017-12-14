@@ -10,3 +10,10 @@ def selected_card_required(func):
         if self.selected_card:
             func(self, *args, **kwargs)
     return func_with_selected_card
+
+
+def player_name_required(func):
+    def func_with_player_name_required(self, *args, **kwargs):
+        if self.player_name:
+            func(self, *args, **kwargs)
+    return func_with_player_name_required
