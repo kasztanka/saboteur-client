@@ -1,13 +1,14 @@
 from PyQt5.QtCore import QThread, pyqtSignal
 
 from blockade import Blockade
-from cards import Card
+from cards import CardType
 from client import Client, MessageCode
 
 
 class SaboteurClient(QThread):
     chat_message_received = pyqtSignal(str)
-    tunnel_card_played = pyqtSignal(Card)
+    card_added_to_game_board = pyqtSignal(str, CardType, int, int)
+    card_added_to_hand_board = pyqtSignal(str, CardType)
     player_joined_room = pyqtSignal(str)
     player_left_room = pyqtSignal(str)
     player_blocked = pyqtSignal(Blockade, str)
@@ -68,7 +69,7 @@ class SaboteurClient(QThread):
     def play_tunnel_card(self, x, y, card):
         card.x = x
         card.y = y
-        self.tunnel_card_played.emit(card)
+        self.card_added_to_game_board.emit(card.filename, CardType.TUNNEL, x, y)
 
     def draw_card(self):
         pass

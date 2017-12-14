@@ -1,11 +1,19 @@
 import os
+from enum import Enum
+
 from PyQt5.QtGui import QPixmap, QPen, QColor
 
 from blockade import Blockade
 
 
-class Card:
+class CardType(Enum):
+    TUNNEL = 0
+    BLOCK = 1
+    HEAL = 2
+    GOAL = 3
 
+
+class Card:
     WIDTH = 66
     HEIGHT = 104
     SELECTION_BORDER_WIDTH = 2
@@ -37,6 +45,17 @@ class Card:
                 self.WIDTH - 2 * self.SELECTION_BORDER_WIDTH,
                 self.HEIGHT - 2 * self.SELECTION_BORDER_WIDTH
             )
+
+    @classmethod
+    def create_card(cls, name, card_type, x=None, y=None):
+        card_mapping = {
+            CardType.TUNNEL: TunnelCard,
+            CardType.BLOCK: BlockCard,
+            CardType.HEAL: HealCard,
+            CardType.GOAL: GoalCard
+        }
+        card_class = card_mapping[card_type]
+        return card_class(name, x=x, y=y)
 
 
 class TunnelCard(Card):
