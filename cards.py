@@ -9,10 +9,14 @@ class Card:
     WIDTH = 66
     HEIGHT = 104
     SELECTION_BORDER_WIDTH = 2
+    DIR_NAME = ''
+    IMAGE_TYPE = '.jpg'
 
     def __init__(self, filename):
         self.filename = filename
-        self.pixmap = QPixmap(filename)
+        self.pixmap = QPixmap(
+            os.path.join(self.DIR_NAME, filename) + self.IMAGE_TYPE
+        )
         self.is_selected = False
 
     def paint(self, painter, x, y=0):
@@ -36,15 +40,15 @@ class Card:
 
 
 class TunnelCard(Card):
+    DIR_NAME = os.path.join('images', 'tunnels')
 
     def __init__(self, *args, x=None, y=None, **kwargs):
         super(TunnelCard, self).__init__(*args, **kwargs)
-        ways = os.path.basename(self.filename).split('.')[0]
-        self.up = 'U' in ways
-        self.down = 'D' in ways
-        self.left = 'L' in ways
-        self.right = 'R' in ways
-        self.mid = 'M' in ways
+        self.up = 'U' in self.filename
+        self.down = 'D' in self.filename
+        self.left = 'L' in self.filename
+        self.right = 'R' in self.filename
+        self.mid = 'M' in self.filename
         self.x = x
         self.y = y
         self.is_rotated = False
@@ -67,6 +71,8 @@ class TunnelCard(Card):
 
 
 class GoalCard(TunnelCard):
+    DIR_NAME = os.path.join('images', 'goals')
+
     def __init__(self, *args, **kwargs):
         super(GoalCard, self).__init__(*args, **kwargs)
         self.is_gold = 'gold' in self.filename
@@ -80,8 +86,8 @@ class ActionCard(Card):
 
 
 class HealCard(ActionCard):
-    pass
+    DIR_NAME = os.path.join('images', 'heal')
 
 
 class BlockCard(ActionCard):
-    pass
+    DIR_NAME = os.path.join('images', 'block')

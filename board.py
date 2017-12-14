@@ -60,10 +60,10 @@ class GameBoard(Board):
 
     def reset_cards(self):
         self.cards = [
-            TunnelCard('images/tunnels/UDLRM1.jpg', x=0, y=2),
-            GoalCard('images/goals/UDLRM_gold.jpg', x=9, y=0),
-            GoalCard('images/goals/ULM_coal.jpg', x=9, y=2),
-            GoalCard('images/goals/URM_coal.jpg', x=9, y=4)
+            TunnelCard('UDLRM1', x=0, y=2),
+            GoalCard('UDLRM_gold', x=9, y=0),
+            GoalCard('ULM_coal', x=9, y=2),
+            GoalCard('URM_coal', x=9, y=4)
         ]
 
     def paint(self, painter, option, widget):
@@ -77,12 +77,12 @@ class HandBoard(Board):
 
     def __init__(self, window):
         super(HandBoard, self).__init__(window)
-        self.cards.append(TunnelCard('images/tunnels/UDL.jpg'))
-        self.cards.append(TunnelCard('images/tunnels/LRM.jpg'))
-        self.cards.append(TunnelCard('images/tunnels/DRM.jpg'))
-        self.cards.append(BlockCard('images/block/LAMP.jpg'))
-        self.cards.append(BlockCard('images/block/TRUCK.jpg'))
-        self.cards.append(HealCard('images/heal/LAMP_TRUCK.jpg'))
+        self.cards.append(TunnelCard('UDL'))
+        self.cards.append(TunnelCard('LRM'))
+        self.cards.append(TunnelCard('DRM'))
+        self.cards.append(BlockCard('LAMP'))
+        self.cards.append(BlockCard('TRUCK'))
+        self.cards.append(HealCard('LAMP_TRUCK'))
 
     def paint(self, painter, option, widget):
         for i, card in enumerate(self.cards):
