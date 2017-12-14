@@ -31,15 +31,18 @@ class SaboteurClient(QThread):
                     room_name = self.network_client.receive_text()
                     rooms.append(room_name)
                 self.rooms_received.emit(rooms)
-                print('otrzymano pokojow: ', len(rooms))
             elif message_code == MessageCode.CHAT_MESSAGE.value:
                 chat_message = self.network_client.receive_text()
                 self.chat_message_received.emit(chat_message)
             elif message_code == MessageCode.ADD_PLAYER.value:
                 new_player_name = self.network_client.receive_text()
                 self.player_joined_room.emit(new_player_name)
+            elif message_code == MessageCode.START_GAME.value:
+                self.game_started.emit()
+            elif message_code == MessageCode.ACTIVATE_PLAYER.value:
+                player_name = self.network_client.receive_text()
+                self.player_activated.emit(player_name)
             elif message_code == MessageCode.INCORRECT_ACTION.value:
-                print('niepoprawna akcja')
                 error_message = self.network_client.receive_text()
                 self.error_received.emit(error_message)
             else:
@@ -52,13 +55,11 @@ class SaboteurClient(QThread):
         self.network_client.send_int(MessageCode.CREATE_ROOM.value)
         self.network_client.send_text(player_name)
         self.network_client.send_text(room_name)
-        self.game_started.emit()
 
     def join_room(self, room_number, player_name):
         self.network_client.send_int(MessageCode.JOIN_ROOM.value)
         self.network_client.send_text(player_name)
         self.network_client.send_int(room_number)
-        self.game_started.emit()
 
     def send_chat_message(self, chat_message):
         self.network_client.send_int(MessageCode.CHAT_MESSAGE.value)

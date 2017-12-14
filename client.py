@@ -10,6 +10,8 @@ class MessageCode(Enum):
     JOIN_ROOM = 2
     ADD_PLAYER = 3
     CHAT_MESSAGE = 4
+    START_GAME = 5
+    ACTIVATE_PLAYER = 6
 
 
 class Client:
@@ -53,6 +55,6 @@ class Client:
         text = b''.join(buffer).decode('utf-8')
         return text
 
-    def __del__(self):
+    def close_connection(self):
         self.sock.close()
         print('Connection closed')
