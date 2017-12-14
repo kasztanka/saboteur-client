@@ -16,4 +16,6 @@ def player_name_required(func):
     def func_with_player_name_required(self, *args, **kwargs):
         if self.player_name:
             func(self, *args, **kwargs)
+        else:
+            self.show_warning('Wprowadź swoją nazwę')
     return func_with_player_name_required

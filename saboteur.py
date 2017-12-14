@@ -31,12 +31,14 @@ class MainWindow(QtWidgets.QMainWindow):
         super(MainWindow, self).__init__()
         self.ui.setupUi(self)
         self.ui.create_room.clicked.connect(self.create_room_click)
+        self.ui.room_name.returnPressed.connect(self.create_room_click)
         self.ui.join_room.clicked.connect(self.join_room_click)
         self.ui.send_message.clicked.connect(self.send_chat_message_click)
         self.ui.new_message.returnPressed.connect(self.send_chat_message_click)
         self.ui.players_list.clicked.connect(self.play_action_card)
         self.ui.draw_card.clicked.connect(self.draw_card)
         self.ui.set_player_name.clicked.connect(self.set_player_name)
+        self.ui.player_name.returnPressed.connect(self.set_player_name)
 
     def setup_client(self, ip_address):
         client = SaboteurClient(ip_address)
