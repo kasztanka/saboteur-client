@@ -16,6 +16,7 @@ class SaboteurClient(QThread):
     player_activated = pyqtSignal(str)
     game_started = pyqtSignal()
     error_received = pyqtSignal(str)
+    rooms_received = pyqtSignal(list)
 
     def __init__(self, ip_address):
         self.network_client = Client(ip_address)
@@ -24,37 +25,43 @@ class SaboteurClient(QThread):
     def run(self):
         while True:
             message_code = self.network_client.receive_int()
-            if message_code == MessageCode.CHAT_MESSAGE.value:
+            if message_code == MessageCode.REQUEST_ROOMS.value:
+                num_rooms = self.network_client.receive_int()
+                rooms = []
+                for _ in range(num_rooms):
+                    room_name = self.network_client.receive_text()
+                    rooms.append(room_name)
+                self.rooms_received.emit(rooms)
+                print('otrzymano pokojow: ', len(rooms))
+            elif message_code == MessageCode.CHAT_MESSAGE.value:
                 chat_message = self.network_client.receive_text()
                 self.chat_message_received.emit(chat_message)
             elif message_code == MessageCode.ADD_PLAYER.value:
                 new_player_name = self.network_client.receive_text()
                 self.player_joined_room.emit(new_player_name)
             elif message_code == MessageCode.INCORRECT_ACTION.value:
+                print('niepoprawna akcja')
                 error_message = self.network_client.receive_text()
                 self.error_received.emit(error_message)
             else:
                 print('Bledny kod: ', message_code)
 
-    def get_available_rooms(self):
-        return ['Pokój Piotrka', 'Room 2']
+    def request_available_rooms(self):
+        self.network_client.send_int(MessageCode.REQUEST_ROOMS.value)
 
     def create_room(self, room_name, player_name):
         self.network_client.send_int(MessageCode.CREATE_ROOM.value)
-        self.send_username(player_name)
+        self.network_client.send_text(player_name)
         self.network_client.send_text(room_name)
         self.game_started.emit()
         self.player_activated.emit(player_name)
 
     def join_room(self, room_number, player_name):
         self.network_client.send_int(MessageCode.JOIN_ROOM.value)
-        self.send_username(player_name)
+        self.network_client.send_text(player_name)
         self.network_client.send_int(room_number)
         self.game_started.emit()
         self.activate_player(player_name)
-
-    def send_username(self, username):
-        self.network_client.send_text(username)
 
     def send_chat_message(self, chat_message):
         self.network_client.send_int(MessageCode.CHAT_MESSAGE.value)

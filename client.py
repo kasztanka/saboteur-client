@@ -5,6 +5,7 @@ from enum import Enum
 
 class MessageCode(Enum):
     INCORRECT_ACTION = -1
+    REQUEST_ROOMS = 0
     CREATE_ROOM = 1
     JOIN_ROOM = 2
     ADD_PLAYER = 3

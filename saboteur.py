@@ -49,6 +49,7 @@ class MainWindow(QtWidgets.QMainWindow):
         client.player_activated.connect(self.activate_player)
         client.game_started.connect(self.start_game)
         client.error_received.connect(self.show_warning)
+        client.rooms_received.connect(self.add_rooms)
         client.start()
         return client
 
@@ -63,7 +64,7 @@ class MainWindow(QtWidgets.QMainWindow):
         return hand_board
 
     def prepare_for_next_game(self):
-        self.ui.available_rooms.addItems(self.client.get_available_rooms())
+        self.client.request_available_rooms()
         self.ui.chat.clear()
         self.selected_card = None
         self.game_board.reset_cards()
@@ -202,6 +203,9 @@ class MainWindow(QtWidgets.QMainWindow):
         '''.format(self.player_name, self.room_name)
         self.player_info.setText(player_info_text)
 
+    @pyqtSlot(list)
+    def add_rooms(self, rooms):
+        self.ui.available_rooms.addItems(rooms)
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
