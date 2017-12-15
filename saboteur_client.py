@@ -42,6 +42,10 @@ class SaboteurClient(QThread):
             elif message_code == MessageCode.ACTIVATE_PLAYER.value:
                 player_name = self.network_client.receive_text()
                 self.player_activated.emit(player_name)
+            elif message_code == MessageCode.DRAW_CARD.value:
+                card_type = self.network_client.receive_int()
+                card_name = self.network_client.receive_text()
+                print(card_type, card_name)
             elif message_code == MessageCode.INCORRECT_ACTION.value:
                 error_message = self.network_client.receive_text()
                 self.error_received.emit(error_message)
@@ -71,7 +75,7 @@ class SaboteurClient(QThread):
         self.tunnel_card_played.emit(card)
 
     def draw_card(self):
-        pass
+        self.network_client.send_int(MessageCode.DRAW_CARD.value)
 
     def block_player(self, blockade, player_name):
         self.player_blocked.emit(blockade, player_name)

@@ -12,6 +12,7 @@ class MessageCode(Enum):
     CHAT_MESSAGE = 4
     START_GAME = 5
     ACTIVATE_PLAYER = 6
+    DRAW_CARD = 7
 
 
 class Client:

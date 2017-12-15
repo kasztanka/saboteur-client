@@ -122,7 +122,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.show_warning('Nie możesz możesz budować tuneli tą kartą.')
 
     @active_player_required
-    def draw_card(self):
+    def draw_card(self, event=None):
         self.client.draw_card()
 
     def discard_used_card(self):
