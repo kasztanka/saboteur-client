@@ -46,7 +46,7 @@ class SaboteurClient(QThread):
             elif message_code == MessageCode.DRAW_CARD.value:
                 card_type = self.network_client.receive_int()
                 card_name = self.network_client.receive_text()
-                print(card_type, card_name)
+                self.card_added_to_hand_board.emit(card_name, CardType(card_type))
             elif message_code == MessageCode.INCORRECT_ACTION.value:
                 error_message = self.network_client.receive_text()
                 self.error_received.emit(error_message)

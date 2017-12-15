@@ -37,6 +37,7 @@ class Board(QGraphicsItem):
 
     def add_card(self, card):
         self.cards.append(card)
+        self.update()
 
     def remove_selected_card(self):
         self.cards = list(filter(lambda c: not c.is_selected, self.cards))

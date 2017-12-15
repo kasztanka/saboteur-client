@@ -137,7 +137,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     @pyqtSlot(str, CardType)
     def add_card_to_hand_board(self, name, card_type):
-        self.game_hand.add_card(Card.create_card(name, card_type))
+        self.hand_board.add_card(Card.create_card(name, card_type))
 
     @pyqtSlot(str)
     def add_player_to_room(self, player_name):
