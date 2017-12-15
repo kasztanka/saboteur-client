@@ -4,7 +4,7 @@ from PyQt5.QtCore import pyqtSlot, Qt
 from PyQt5.QtWidgets import QListWidgetItem, QMessageBox
 
 from blockade import Blockade
-from cards import Card, HealCard, BlockCard, TunnelCard
+from cards import Card, HealCard, BlockCard, TunnelCard, CardType
 from decorators import active_player_required, selected_card_required, player_name_required
 from player import Player, LocalPlayer
 from saboteur_gui import Ui_MainWindow
@@ -43,7 +43,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def setup_client(self, ip_address):
         client = SaboteurClient(ip_address)
         client.chat_message_received.connect(self.receive_chat_message)
-        client.tunnel_card_played.connect(self.add_card_to_game_board)
+        client.card_added_to_game_board.connect(self.add_card_to_game_board)
+        client.card_added_to_hand_board.connect(self.add_card_to_hand_board)
         client.player_joined_room.connect(self.add_player_to_room)
         client.player_left_room.connect(self.player_left_room)
         client.player_blocked.connect(self.add_blockade_to_player)
@@ -130,9 +131,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.selected_card.is_selected = False
         self.selected_card = None
 
-    @pyqtSlot(Card)
-    def add_card_to_game_board(self, card):
-        self.game_board.add_card(card)
+    @pyqtSlot(str, CardType, int, int)
+    def add_card_to_game_board(self, name, card_type, x, y):
+        self.game_board.add_card(Card.create_card(name, card_type, x, y))
+
+    @pyqtSlot(str, CardType)
+    def add_card_to_hand_board(self, name, card_type):
+        self.game_hand.add_card(Card.create_card(name, card_type))
 
     @pyqtSlot(str)
     def add_player_to_room(self, player_name):
