@@ -50,8 +50,12 @@ class SaboteurClient(QThread):
             elif message_code == MessageCode.INCORRECT_ACTION.value:
                 error_message = self.network_client.receive_text()
                 self.error_received.emit(error_message)
+            elif message_code == MessageCode.CLOSE_CONNECTION.value:
+                break
             else:
                 print('Bledny kod: ', message_code)
+        self.network_client.sock.close()
+        print('Connection closed')
 
     def request_available_rooms(self):
         self.network_client.send_int(MessageCode.REQUEST_ROOMS.value)

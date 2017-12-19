@@ -13,6 +13,7 @@ class MessageCode(Enum):
     START_GAME = 5
     ACTIVATE_PLAYER = 6
     DRAW_CARD = 7
+    CLOSE_CONNECTION = 8
 
 
 class Client:
@@ -57,5 +58,4 @@ class Client:
         return text
 
     def close_connection(self):
-        self.sock.close()
-        print('Connection closed')
+        self.send_int(MessageCode.CLOSE_CONNECTION.value)
