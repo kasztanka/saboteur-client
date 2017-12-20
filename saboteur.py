@@ -126,14 +126,14 @@ class MainWindow(QtWidgets.QMainWindow):
     def draw_card(self, event=None):
         self.client.draw_card()
 
-    def discard_used_card(self):
-        self.hand_board.remove_selected_card()
+    def discard_card(self, x):
+        self.hand_board.remove_card(x)
         self.selected_card.is_selected = False
         self.selected_card = None
 
     @pyqtSlot(str, CardType, int, int)
     def add_card_to_game_board(self, name, card_type, x, y):
-        self.game_board.add_card(Card.create_card(name, card_type, x, y))
+        self.game_board.add_card(Card.create_card(name, card_type), x, y)
 
     @pyqtSlot(str, CardType)
     def add_card_to_hand_board(self, name, card_type):

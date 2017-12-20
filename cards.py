@@ -47,7 +47,7 @@ class Card:
             )
 
     @classmethod
-    def create_card(cls, name, card_type, x=None, y=None):
+    def create_card(cls, name, card_type):
         card_mapping = {
             CardType.TUNNEL: TunnelCard,
             CardType.BLOCK: BlockCard,
@@ -55,21 +55,19 @@ class Card:
             CardType.GOAL: GoalCard
         }
         card_class = card_mapping[card_type]
-        return card_class(name, x=x, y=y)
+        return card_class(name)
 
 
 class TunnelCard(Card):
     DIR_NAME = os.path.join('images', 'tunnels')
 
-    def __init__(self, *args, x=None, y=None, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(TunnelCard, self).__init__(*args, **kwargs)
         self.up = 'U' in self.filename
         self.down = 'D' in self.filename
         self.left = 'L' in self.filename
         self.right = 'R' in self.filename
         self.mid = 'M' in self.filename
-        self.x = x
-        self.y = y
         self.is_rotated = False
 
     def rotate(self):

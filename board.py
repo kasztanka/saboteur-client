@@ -12,7 +12,11 @@ class Board(QGraphicsItem):
     def __init__(self, window):
         super(Board, self).__init__()
         self.window = window
-        self.cards = []
+        self.cards = None
+        self.reset_cards()
+
+    def reset_cards(self):
+        self.cards = [[None for _ in range(self.COLS)] for _ in range(self.ROWS)]
 
     def boundingRect(self):
         return QRectF(
@@ -31,18 +35,6 @@ class Board(QGraphicsItem):
         self.update()
         super(Board, self).mousePressEvent(event)
 
-    def tile_clicked(self, button, x, y):
-        if 0 <= x < self.COLS and 0 <= y < self.ROWS:
-            self.window.play_tunnel_card(x, y)
-
-    def add_card(self, card):
-        self.cards.append(card)
-        self.update()
-
-    def remove_selected_card(self):
-        self.cards = list(filter(lambda c: not c.is_selected, self.cards))
-        self.update()
-
     def setup(self, ui_board):
         board_scene = QGraphicsScene(ui_board)
         board_scene.addItem(self)
@@ -54,22 +46,38 @@ class Board(QGraphicsItem):
         ui_board.setScene(board_scene)
         ui_board.setCacheMode(QGraphicsView.CacheBackground)
 
+    def paint(self, painter, option, widget):
+        for y, row in enumerate(self.cards):
+            for x, col in enumerate(row):
+                if self.cards[y][x]:
+                    self.cards[y][x].paint(painter, x, y)
+
+    def tile_clicked(self, button, x, y):
+        raise NotImplementedError()
+
 
 class GameBoard(Board):
     ROWS = 5
     COLS = 10
 
     def reset_cards(self):
-        self.cards = [
-            TunnelCard('UDLRM1', x=0, y=2),
-            GoalCard('UDLRM_gold', x=9, y=0),
-            GoalCard('ULM_coal', x=9, y=2),
-            GoalCard('URM_coal', x=9, y=4)
-        ]
+        super(GameBoard, self).reset_cards()
+        self.add_card(TunnelCard('UDLRM1'), x=0, y=2)
+        self.add_card(GoalCard('UDLRM_gold'), x=9, y=0)
+        self.add_card(GoalCard('ULM_coal'), x=9, y=2)
+        self.add_card(GoalCard('URM_coal'), x=9, y=4)
 
-    def paint(self, painter, option, widget):
-        for card in self.cards:
-            card.paint(painter, card.x, card.y)
+    def add_card(self, card, x, y):
+        self.cards[y][x] = card
+        self.update()
+
+    def remove_card(self, x, y):
+        self.cards[y][x] = None
+        self.update()
+
+    def tile_clicked(self, button, x, y):
+        if 0 <= x < self.COLS and 0 <= y < self.ROWS:
+            self.window.play_tunnel_card(x, y)
 
 
 class HandBoard(Board):
@@ -78,24 +86,32 @@ class HandBoard(Board):
 
     def __init__(self, window):
         super(HandBoard, self).__init__(window)
-        self.cards.append(TunnelCard('UDL'))
-        self.cards.append(TunnelCard('LRM'))
-        self.cards.append(TunnelCard('DRM'))
-        self.cards.append(BlockCard('LAMP'))
-        self.cards.append(BlockCard('TRUCK'))
-        self.cards.append(HealCard('LAMP_TRUCK'))
-
-    def paint(self, painter, option, widget):
-        for i, card in enumerate(self.cards):
-            card.paint(painter, x=i, y=0)
+        self.cards[0] = []
+        self.hand_cards = self.cards[0]
+        self.hand_cards.append(TunnelCard('UDL'))
+        self.hand_cards.append(TunnelCard('LRM'))
+        self.hand_cards.append(TunnelCard('DRM'))
+        self.hand_cards.append(BlockCard('LAMP'))
+        self.hand_cards.append(BlockCard('TRUCK'))
+        self.hand_cards.append(HealCard('LAMP_TRUCK'))
 
     def tile_clicked(self, button, x, y):
-        if x < len(self.cards):
+        if x < len(self.hand_cards):
             if button == QtCore.Qt.RightButton:
-                if isinstance(self.cards[x], TunnelCard):
-                    self.cards[x].rotate()
+                if isinstance(self.hand_cards[x], TunnelCard):
+                    self.hand_cards[x].rotate()
             else:
-                for card in self.cards:
+                for card in self.hand_cards:
                     card.is_selected = False
-                self.cards[x].is_selected = True
-                self.window.selected_card = self.cards[x]
+                self.hand_cards[x].is_selected = True
+                self.window.selected_card = self.hand_cards[x]
+
+    def add_card(self, card):
+        self.hand_cards.append(card)
+        self.update()
+
+    def remove_card(self, x):
+        self.hand_cards.pop(x)
+        self.update()
+
+
