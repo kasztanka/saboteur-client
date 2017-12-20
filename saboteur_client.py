@@ -7,7 +7,7 @@ from client import Client, MessageCode
 
 class SaboteurClient(QThread):
     chat_message_received = pyqtSignal(str)
-    card_added_to_game_board = pyqtSignal(str, CardType, int, int)
+    card_added_to_game_board = pyqtSignal(str, CardType, int, int, bool)
     card_added_to_hand_board = pyqtSignal(str, CardType)
     player_joined_room = pyqtSignal(str)
     player_left_room = pyqtSignal(str)
@@ -17,6 +17,7 @@ class SaboteurClient(QThread):
     game_started = pyqtSignal()
     error_received = pyqtSignal(str)
     rooms_received = pyqtSignal(list)
+    card_discarded = pyqtSignal(int)
 
     def __init__(self, ip_address):
         self.network_client = Client(ip_address)
@@ -47,6 +48,15 @@ class SaboteurClient(QThread):
                 card_type = self.network_client.receive_int()
                 card_name = self.network_client.receive_text()
                 self.card_added_to_hand_board.emit(card_name, CardType(card_type))
+            elif message_code == MessageCode.ADD_CARD_TO_BOARD.value:
+                filename = self.network_client.receive_text()
+                x = self.network_client.receive_int()
+                y = self.network_client.receive_int()
+                is_rotated = bool(self.network_client.receive_int())
+                self.card_added_to_game_board.emit(filename, CardType.TUNNEL, x, y, is_rotated)
+            elif message_code == MessageCode.REMOVE_CARD_FROM_HAND.value:
+                card_index = self.network_client.receive_int()
+                self.card_discarded.emit(card_index)
             elif message_code == MessageCode.INCORRECT_ACTION.value:
                 error_message = self.network_client.receive_text()
                 self.error_received.emit(error_message)
@@ -74,10 +84,12 @@ class SaboteurClient(QThread):
         self.network_client.send_int(MessageCode.CHAT_MESSAGE.value)
         self.network_client.send_text(chat_message)
 
-    def play_tunnel_card(self, x, y, card):
-        card.x = x
-        card.y = y
-        self.card_added_to_game_board.emit(card.filename, CardType.TUNNEL, x, y)
+    def play_tunnel_card(self, card_index, x, y, is_rotated):
+        self.network_client.send_int(MessageCode.ADD_CARD_TO_BOARD.value)
+        self.network_client.send_int(card_index)
+        self.network_client.send_int(x)
+        self.network_client.send_int(y)
+        self.network_client.send_int(int(is_rotated))
 
     def draw_card(self):
         self.network_client.send_int(MessageCode.DRAW_CARD.value)

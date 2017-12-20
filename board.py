@@ -88,12 +88,6 @@ class HandBoard(Board):
         super(HandBoard, self).__init__(window)
         self.cards[0] = []
         self.hand_cards = self.cards[0]
-        self.hand_cards.append(TunnelCard('UDL'))
-        self.hand_cards.append(TunnelCard('LRM'))
-        self.hand_cards.append(TunnelCard('DRM'))
-        self.hand_cards.append(BlockCard('LAMP'))
-        self.hand_cards.append(BlockCard('TRUCK'))
-        self.hand_cards.append(HealCard('LAMP_TRUCK'))
 
     def tile_clicked(self, button, x, y):
         if x < len(self.hand_cards):

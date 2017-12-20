@@ -13,7 +13,9 @@ class MessageCode(Enum):
     START_GAME = 5
     ACTIVATE_PLAYER = 6
     DRAW_CARD = 7
-    CLOSE_CONNECTION = 8
+    ADD_CARD_TO_BOARD = 8
+    REMOVE_CARD_FROM_HAND = 9
+    CLOSE_CONNECTION = 10
 
 
 class Client:

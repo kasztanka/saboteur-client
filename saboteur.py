@@ -53,6 +53,7 @@ class MainWindow(QtWidgets.QMainWindow):
         client.game_started.connect(self.start_game)
         client.error_received.connect(self.show_warning)
         client.rooms_received.connect(self.add_rooms)
+        client.card_discarded.connect(self.discard_card)
         client.start()
         return client
 
@@ -118,7 +119,8 @@ class MainWindow(QtWidgets.QMainWindow):
     @selected_card_required
     def play_tunnel_card(self, x ,y):
         if isinstance(self.selected_card, TunnelCard):
-            self.client.play_tunnel_card(x, y, self.selected_card)
+            card_index = self.hand_board.hand_cards.index(self.selected_card)
+            self.client.play_tunnel_card(card_index, x, y, self.selected_card.is_rotated)
         else:
             self.show_warning('Nie możesz możesz budować tuneli tą kartą.')
 
@@ -126,14 +128,17 @@ class MainWindow(QtWidgets.QMainWindow):
     def draw_card(self, event=None):
         self.client.draw_card()
 
+    @pyqtSlot(int)
     def discard_card(self, x):
         self.hand_board.remove_card(x)
         self.selected_card.is_selected = False
         self.selected_card = None
 
-    @pyqtSlot(str, CardType, int, int)
-    def add_card_to_game_board(self, name, card_type, x, y):
-        self.game_board.add_card(Card.create_card(name, card_type), x, y)
+    @pyqtSlot(str, CardType, int, int, bool)
+    def add_card_to_game_board(self, name, card_type, x, y, is_rotated):
+        new_card = Card.create_card(name, card_type)
+        new_card.is_rotated = is_rotated
+        self.game_board.add_card(new_card, x, y)
 
     @pyqtSlot(str, CardType)
     def add_card_to_hand_board(self, name, card_type):
