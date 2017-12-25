@@ -1,21 +1,5 @@
 import socket
 import struct
-from enum import Enum
-
-
-class MessageCode(Enum):
-    INCORRECT_ACTION = -1
-    REQUEST_ROOMS = 0
-    CREATE_ROOM = 1
-    JOIN_ROOM = 2
-    ADD_PLAYER = 3
-    CHAT_MESSAGE = 4
-    START_GAME = 5
-    ACTIVATE_PLAYER = 6
-    DRAW_CARD = 7
-    ADD_CARD_TO_BOARD = 8
-    REMOVE_CARD_FROM_HAND = 9
-    CLOSE_CONNECTION = 10
 
 
 class Client:
@@ -58,6 +42,3 @@ class Client:
         buffer = self.receive_buffer(length)
         text = b''.join(buffer).decode('utf-8')
         return text
-
-    def close_connection(self):
-        self.send_int(MessageCode.CLOSE_CONNECTION.value)

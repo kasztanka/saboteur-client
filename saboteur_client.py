@@ -1,8 +1,24 @@
 from PyQt5.QtCore import QThread, pyqtSignal
+from enum import Enum
 
 from blockade import Blockade
 from cards import CardType
-from client import Client, MessageCode
+from client import Client
+
+
+class MessageCode(Enum):
+    INCORRECT_ACTION = -1
+    REQUEST_ROOMS = 0
+    CREATE_ROOM = 1
+    JOIN_ROOM = 2
+    ADD_PLAYER = 3
+    CHAT_MESSAGE = 4
+    START_GAME = 5
+    ACTIVATE_PLAYER = 6
+    DRAW_CARD = 7
+    ADD_CARD_TO_BOARD = 8
+    REMOVE_CARD_FROM_HAND = 9
+    CLOSE_CONNECTION = 10
 
 
 class SaboteurClient(QThread):
@@ -99,3 +115,6 @@ class SaboteurClient(QThread):
 
     def heal_player(self, blockade, player_name):
         self.player_healed.emit(blockade, player_name)
+
+    def close_connection(self):
+        self.network_client.send_int(MessageCode.CLOSE_CONNECTION.value)
