@@ -18,7 +18,9 @@ class MessageCode(Enum):
     DRAW_CARD = 7
     ADD_CARD_TO_BOARD = 8
     REMOVE_CARD_FROM_HAND = 9
-    CLOSE_CONNECTION = 10
+    BLOCK = 10
+    HEAL = 11
+    CLOSE_CONNECTION = 12
 
 
 class SaboteurClient(QThread):
@@ -76,6 +78,14 @@ class SaboteurClient(QThread):
             elif message_code == MessageCode.INCORRECT_ACTION.value:
                 error_message = self.network_client.receive_text()
                 self.error_received.emit(error_message)
+            elif message_code == MessageCode.BLOCK.value:
+                blockade = self.network_client.receive_int()
+                player_name = self.network_client.receive_text()
+                self.player_blocked.emit(Blockade(blockade), player_name)
+            elif message_code == MessageCode.HEAL.value:
+                blockade = self.network_client.receive_int()
+                player_name = self.network_client.receive_text()
+                self.player_healed.emit(Blockade[blockade], player_name)
             elif message_code == MessageCode.CLOSE_CONNECTION.value:
                 break
             else:
@@ -110,11 +120,15 @@ class SaboteurClient(QThread):
     def draw_card(self):
         self.network_client.send_int(MessageCode.DRAW_CARD.value)
 
-    def block_player(self, blockade, player_name):
-        self.player_blocked.emit(blockade, player_name)
+    def block_player(self, card_index, player_index):
+        self.network_client.send_int(MessageCode.BLOCK.value)
+        self.network_client.send_int(card_index)
+        self.network_client.send_int(player_index)
 
-    def heal_player(self, blockade, player_name):
-        self.player_healed.emit(blockade, player_name)
+    def heal_player(self, card_index, player_index):
+        self.network_client.send_int(MessageCode.HEAL.value)
+        self.network_client.send_int(card_index)
+        self.network_client.send_int(player_index)
 
     def close_connection(self):
         self.network_client.send_int(MessageCode.CLOSE_CONNECTION.value)

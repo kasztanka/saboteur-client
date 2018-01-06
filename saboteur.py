@@ -106,12 +106,12 @@ class MainWindow(QtWidgets.QMainWindow):
     @active_player_required
     @selected_card_required
     def play_action_card(self, event=None):
-        item = self.ui.players_list.currentItem()
-        player = item.data(Qt.UserRole)
+        player_index = self.ui.players_list.currentRow()
+        card_index = self.hand_board.hand_cards.index(self.selected_card)
         if isinstance(self.selected_card, BlockCard):
-            self.client.block_player(self.selected_card.blockade, player.name)
+            self.client.block_player(card_index, player_index)
         elif isinstance(self.selected_card, HealCard):
-            self.client.heal_player(self.selected_card.blockade, player.name)
+            self.client.heal_player(card_index, player_index)
         else:
             self.show_warning('Nie możesz zakładać/zdejmować blokad tą kartą.')
 
