@@ -85,7 +85,7 @@ class SaboteurClient(QThread):
             elif message_code == MessageCode.HEAL.value:
                 blockade = self.network_client.receive_int()
                 player_name = self.network_client.receive_text()
-                self.player_healed.emit(Blockade[blockade], player_name)
+                self.player_healed.emit(Blockade(blockade), player_name)
             elif message_code == MessageCode.CLOSE_CONNECTION.value:
                 break
             else:
