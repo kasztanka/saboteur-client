@@ -24,6 +24,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.selected_card = None
         self.local_player = None
         self.player_name = None
+        self.player_role = None
         self.room_name = None
         self.prepare_for_next_game()
 
@@ -50,6 +51,7 @@ class MainWindow(QtWidgets.QMainWindow):
         client.player_blocked.connect(self.add_blockade_to_player)
         client.player_healed.connect(self.remove_blockade_from_player)
         client.player_activated.connect(self.activate_player)
+        client.player_role_set.connect(self.set_player_role)
         client.game_started.connect(self.start_game)
         client.error_received.connect(self.show_warning)
         client.rooms_received.connect(self.add_rooms)
@@ -211,11 +213,17 @@ class MainWindow(QtWidgets.QMainWindow):
         msg.setWindowTitle('Niepoprawna akcja')
         msg.exec_()
 
+    @pyqtSlot(str)
+    def set_player_role(self, role):
+        self.player_role = role
+        self.update_player_info()
+
     def update_player_info(self):
         player_info_text = '''
         Nazwa gracza: {}
         Pokój: {}
-        '''.format(self.player_name, self.room_name)
+        Rola: {}
+        '''.format(self.player_name, self.room_name, self.player_role)
         self.ui.player_info.setText(player_info_text)
 
     @pyqtSlot(list)
