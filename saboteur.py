@@ -56,6 +56,7 @@ class MainWindow(QtWidgets.QMainWindow):
         client.error_received.connect(self.show_warning)
         client.rooms_received.connect(self.add_rooms)
         client.card_discarded.connect(self.discard_card)
+        client.game_closed.connect(self.show_final_message)
         client.start()
         return client
 
@@ -229,6 +230,15 @@ class MainWindow(QtWidgets.QMainWindow):
     @pyqtSlot(list)
     def add_rooms(self, rooms):
         self.ui.available_rooms.addItems(rooms)
+
+    @pyqtSlot(str)
+    def show_final_message(self, message):
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Warning)
+        msg.setText(message)
+        msg.setWindowTitle('Koniec gry')
+        msg.exec_()
+        sys.exit(0)
 
     def closeEvent(self, *args, **kwargs):
         self.client.close_connection()

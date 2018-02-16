@@ -22,6 +22,7 @@ class MessageCode(Enum):
     HEAL = 11
     SET_ROLE = 12
     CLOSE_CONNECTION = 13
+    END_GAME = 14
 
 
 class SaboteurClient(QThread):
@@ -38,6 +39,7 @@ class SaboteurClient(QThread):
     error_received = pyqtSignal(str)
     rooms_received = pyqtSignal(list)
     card_discarded = pyqtSignal(int)
+    game_closed = pyqtSignal(str)
 
     def __init__(self, ip_address):
         self.nc = Client(ip_address)
@@ -94,6 +96,9 @@ class SaboteurClient(QThread):
                 print('Otrzymano rolę: ', role)
             elif message_code == MessageCode.CLOSE_CONNECTION.value:
                 break
+            elif message_code == MessageCode.END_GAME.value:
+                end_message = self.nc.receive_text()
+                self.game_closed.emit(end_message)
             else:
                 print('Bledny kod: ', message_code)
         self.nc.sock.close()
