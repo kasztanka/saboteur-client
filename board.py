@@ -63,8 +63,8 @@ class GameBoard(Board):
     def reset_cards(self):
         super(GameBoard, self).reset_cards()
         self.add_card(TunnelCard('UDLRM1'), x=0, y=2)
-        self.add_card(GoalCard('UDLRM_gold'), x=9, y=0)
-        self.add_card(GoalCard('ULM_coal'), x=9, y=2)
+        self.add_card(GoalCard('UDLRM_gold'), x=9, y=2)
+        self.add_card(GoalCard('ULM_coal'), x=9, y=0)
         self.add_card(GoalCard('URM_coal'), x=9, y=4)
 
     def add_card(self, card, x, y):
